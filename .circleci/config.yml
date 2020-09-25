@@ -69,6 +69,7 @@ jobs:
     steps:
     - checkout
     - *use_docker
+    - *quay_login
     - run: babylon/build build
     - run: babylon/build install
   tag-semver:

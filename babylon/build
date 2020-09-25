@@ -5,7 +5,7 @@ set -exo pipefail
 CONTAINER_NAME=quay.io/babylonhealth/azure-terraform
 BINARY_NAME=terraform-provider-azuredevops
 
-SHA_VERSION=${CIRCLE_COMMIT_SHA:-unknown}
+SHA_VERSION=${CIRCLE_SHA1:-unknown}
 SEMVER_VERSION="$(git describe --abbrev=0 --tags || echo unknown)"
 
 PROVIDER_NAME=azuredevops
