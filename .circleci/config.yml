@@ -1,0 +1,80 @@
+---
+version: 2
+
+prelude: &prelude
+  docker:
+  - image: circleci/golang:1.13
+  working_directory: ~/babylon
+
+use_docker: &use_docker setup_remote_docker
+
+quay_login: &quay_login
+  run: docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}" quay.io
+
+only_master: &only_master
+  filters:
+    branches:
+      only:
+      - master
+
+not_master: &not_master
+  filters:
+    branches:
+      ignore:
+      - master
+
+only_tagged: &only_tagged
+  filters:
+    branches:
+      ignore:
+      - /^.*$/
+    tags:
+      only:
+      - /^.*$/
+
+workflows:
+  version: 2
+  pr-flow:
+    jobs:
+    - test:
+        <<: *not_master
+    - compile:
+        <<: *not_master
+
+  master-flow:
+    jobs:
+    - build:
+        context: babylon
+        <<: *only_master
+
+  semver-flow:
+    jobs:
+    - tag-semver:
+        context: babylon
+        <<: *only_tagged
+
+jobs:
+  test:
+    <<: *prelude
+    steps:
+    - checkout
+    - run: babylon/build test
+  compile:
+    <<: *prelude
+    steps:
+    - checkout
+    - run: babylon/build compile
+  build:
+    <<: *prelude
+    steps:
+    - checkout
+    - *use_docker
+    - run: babylon/build build
+    - run: babylon/build install
+  tag-semver:
+    <<: *prelude
+    steps:
+    - checkout
+    - *use_docker
+    - *quay_login
+    - run: babylon/build tag-semver

@@ -1,0 +1,6 @@
+ARG SEMVER_VERSION=broken-semver
+FROM quay.io/babylonhealth/azure-terraform:${SEMVER_VERSION}
+
+RUN \
+    cd /root/.terraform.d/plugins/babylonhealth.com/babylonhealth/azuredevops/ \
+    && mv $(find . -type d) ${SEMVER_VERSION}

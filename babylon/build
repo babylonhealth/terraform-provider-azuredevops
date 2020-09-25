@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+set -exo pipefail
+
+CONTAINER_NAME=quay.io/babylonhealth/azure-terraform
+BINARY_NAME=terraform-provider-azuredevops
+
+SHA_VERSION=${CIRCLE_COMMIT_SHA:-unknown}
+SEMVER_VERSION="$(git describe --abbrev=0 --tags || echo unknown)"
+
+PROVIDER_NAME=azuredevops
+PLUGIN_DIR="babylon/terraform.d/plugins/babylonhealth.com/babylonhealth/${PROVIDER_NAME}/${SEMVER_VERSION}/linux_amd64"
+
+
+run_compile() {
+    go mod download
+    go build
+    chmod +x "${BINARY_NAME}"
+}
+
+run_test() {
+    echo "Tests unimplemented"
+    exit 1
+}
+
+run_build() {
+    mkdir -p "${PLUGIN_DIR}"
+    cp "${BINARY_NAME}" "${PLUGIN_DIR}"
+    docker build . -f babylon/Dockerfile.sha \
+        -t "${CONTAINER_NAME}:${SHA_VERSION}"
+    docker tag "${CONTAINER_NAME}:${SHA_VERSION}" \
+        "${CONTAINER_NAME}:latest"
+}
+
+run_install() {
+    docker push "${CONTAINER_NAME}:${SHA_VERSION}"
+    docker push "${CONTAINER_NAME}:latest"
+}
+
+run_tag_semver() {
+    docker pull "${CONTAINER_NAME}:${SHA_VERSION}"
+    docker build . -f babylon/Dockerfile.semver
+        --build-arg SEMVER_VERSION="${SEMVER_VERSION}" \
+        -t "${CONTAINER_NAME}:${SEMVER_VERSION}"
+
+    if docker run -e DOCKER_REPO=babylonhealth/azure-terraform -e DOCKER_TAG="${SEMVER_VERSION}" quay.io/babylonhealth/tag-exists; then
+        echo "Tag ${SEMVER_VERSION} exists!" && exit 1
+    else
+        docker push "${CONTAINER_NAME}:${SEMVER_VERSION}"
+    fi
+}
+
+main() {
+    case $1 in
+        compile)
+            run_compile
+            ;;
+        test)
+            run_test
+            ;;
+        build)
+            run_compile
+            run_build
+            ;;
+        install)
+            run_install
+            ;;
+        tag-semver)
+            run_tag_semver
+            ;;
+        *)
+            echo "unknown action $1"
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

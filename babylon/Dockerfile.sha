@@ -1,0 +1,7 @@
+FROM hashicorp/terraform:0.13.3
+
+RUN mkdir -p /opt/babylon
+
+COPY babylon/terraform.d /root/.terraform.d
+
+WORKDIR /opt/babylon
