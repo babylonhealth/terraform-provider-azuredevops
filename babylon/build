@@ -5,7 +5,7 @@ set -exo pipefail
 CONTAINER_NAME=quay.io/babylonhealth/azure-terraform
 BINARY_NAME=terraform-provider-azuredevops
 
-SHA_VERSION=${CIRCLE_SHA1:-unknown}
+SHA_VERSION=${CIRCLE_SHA1:-latest}
 SEMVER_VERSION="$(git describe --abbrev=0 --tags || echo unknown)"
 
 PROVIDER_NAME=azuredevops
@@ -39,7 +39,8 @@ run_install() {
 
 run_tag_semver() {
     docker pull "${CONTAINER_NAME}:${SHA_VERSION}"
-    docker build . -f babylon/Dockerfile.semver
+    docker build . -f babylon/Dockerfile.semver \
+        --build-arg SHA_VERSION="${SHA_VERSION}" \
         --build-arg SEMVER_VERSION="${SEMVER_VERSION}" \
         -t "${CONTAINER_NAME}:${SEMVER_VERSION}"
 
