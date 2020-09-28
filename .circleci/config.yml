@@ -3,13 +3,16 @@ version: 2
 
 prelude: &prelude
   docker:
-  - image: circleci/golang:1.13
+  - image: golang:1.13-alpine
   working_directory: ~/babylon
 
 use_docker: &use_docker setup_remote_docker
 
 quay_login: &quay_login
   run: docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}" quay.io
+
+install_base: &install_base
+  run: apk add git bash
 
 only_master: &only_master
   filters:
@@ -57,16 +60,19 @@ jobs:
   test:
     <<: *prelude
     steps:
+    - *install_base
     - checkout
     - run: babylon/build test
   compile:
     <<: *prelude
     steps:
+    - *install_base
     - checkout
     - run: babylon/build compile
   build:
     <<: *prelude
     steps:
+    - *install_base
     - checkout
     - *use_docker
     - *quay_login
@@ -75,6 +81,7 @@ jobs:
   tag-semver:
     <<: *prelude
     steps:
+    - *install_base
     - checkout
     - *use_docker
     - *quay_login
