@@ -14,6 +14,9 @@ quay_login: &quay_login
 install_base: &install_base
   run: apk add git bash
 
+install_docker: &install_docker
+  run: apk add docker
+
 only_master: &only_master
   filters:
     branches:
@@ -73,6 +76,7 @@ jobs:
     <<: *prelude
     steps:
     - *install_base
+    - *install_docker
     - checkout
     - *use_docker
     - *quay_login
@@ -82,6 +86,7 @@ jobs:
     <<: *prelude
     steps:
     - *install_base
+    - *install_docker
     - checkout
     - *use_docker
     - *quay_login
