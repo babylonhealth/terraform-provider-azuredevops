@@ -23,6 +23,14 @@ run_test() {
     exit 1
 }
 
+run_docker_compile() {
+    docker build . -f babylon/Dockerfile.build -t "${CONTAINER_NAME}:build"
+    docker run --rm -it \
+        -v $(pwd):/opt/babylon \
+        --entrypoint=/opt/babylon/babylon/build \
+        "${CONTAINER_NAME}:build" compile
+}
+
 run_build() {
     mkdir -p "${PLUGIN_DIR}"
     cp "${BINARY_NAME}" "${PLUGIN_DIR}"
@@ -61,6 +69,10 @@ main() {
             ;;
         build)
             run_compile
+            run_build
+            ;;
+        docker-build)
+            run_docker_compile
             run_build
             ;;
         install)
