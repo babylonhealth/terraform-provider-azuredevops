@@ -25,6 +25,7 @@ func TestProvider_HasChildResources(t *testing.T) {
 		"azuredevops_serviceendpoint_bitbucket",
 		"azuredevops_serviceendpoint_kubernetes",
 		"azuredevops_serviceendpoint_aws",
+		"azuredevops_serviceendpoint_genericwebhook",
 		"azuredevops_variable_group",
 		"azuredevops_git_repository",
 		"azuredevops_user_entitlement",
@@ -37,6 +38,7 @@ func TestProvider_HasChildResources(t *testing.T) {
 		"azuredevops_workitemquery_permissions",
 		"azuredevops_area_permissions",
 		"azuredevops_iteration_permissions",
+		"azuredevops_check_invokerestapi",
 	}
 
 	resources := Provider().ResourcesMap

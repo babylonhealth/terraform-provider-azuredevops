@@ -5,6 +5,7 @@ import (
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/client"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/build"
+	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/resource"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/core"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/git"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/graph"
@@ -37,7 +38,7 @@ func Provider() *schema.Provider {
 			"azuredevops_serviceendpoint_azurecr":          serviceendpoint.ResourceServiceEndpointAzureCR(),
 			"azuredevops_serviceendpoint_github":           serviceendpoint.ResourceServiceEndpointGitHub(),
 			"azuredevops_serviceendpoint_kubernetes":       serviceendpoint.ResourceServiceEndpointKubernetes(),
-			"azuredevops_serviceendpoint_genericwebhook": 	serviceendpoint.ResourceServiceEndpointGenericWebhook(),
+			"azuredevops_serviceendpoint_genericwebhook":   serviceendpoint.ResourceServiceEndpointGenericWebhook(),
 			"azuredevops_git_repository":                   git.ResourceGitRepository(),
 			"azuredevops_user_entitlement":                 memberentitlementmanagement.ResourceUserEntitlement(),
 			"azuredevops_group_membership":                 graph.ResourceGroupMembership(),
@@ -49,6 +50,7 @@ func Provider() *schema.Provider {
 			"azuredevops_workitemquery_permissions":        permissions.ResourceWorkItemQueryPermissions(),
 			"azuredevops_area_permissions":                 permissions.ResourceAreaPermissions(),
 			"azuredevops_iteration_permissions":            permissions.ResourceIterationPermissions(),
+			"azuredevops_check_invokerestapi":              resource.ResourceCheckInvokeRestAPI(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"azuredevops_agent_pool":       taskagent.DataAgentPool(),
