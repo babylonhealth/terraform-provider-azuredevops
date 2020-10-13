@@ -39,6 +39,7 @@ func TestProvider_HasChildResources(t *testing.T) {
 		"azuredevops_area_permissions",
 		"azuredevops_iteration_permissions",
 		"azuredevops_check_invokerestapi",
+		"azuredevops_check_manualapproval",
 	}
 
 	resources := Provider().ResourcesMap

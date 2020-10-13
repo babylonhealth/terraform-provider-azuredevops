@@ -1,7 +1,8 @@
-package checks
+package model
 
 import (
 	"encoding/json"
+	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/common/model"
 	"log"
 )
 
@@ -31,7 +32,7 @@ type CheckConfiguration struct {
 			SuccessCriteria              string `json:"successCriteria"`
 			Headers                      string `json:"headers"`
 		} `json:"inputs"`
-		RetryInterval int64 `json:"retryInterval"`
+		RetryInterval       int64  `json:"retryInterval"`
 		LinkedVariableGroup string `json:"linkedVariableGroup"`
 	} `json:"settings"`
 	CreatedBy struct {
@@ -48,7 +49,7 @@ type CheckConfiguration struct {
 		Descriptor  string `json:"descriptor"`
 	} `json:"modifiedBy"`
 	ModifiedOn string `json:"modifiedOn"`
-	Timeout    int64    `json:"timeout"`
+	Timeout    int64  `json:"timeout"`
 	Links      struct {
 		Self struct {
 			Href string `json:"href"`
@@ -68,16 +69,12 @@ type CheckConfiguration struct {
 }
 
 type CheckConfigurationData struct {
-	DefinitionRefID    string `json:"definitionRefId"`
+	DefinitionRefID    string             `json:"definitionRefId"`
 	CheckConfiguration CheckConfiguration `json:"checkConfiguration"`
 }
 
-
 type InvokeRestAPICheckPayload struct {
-	Type struct {
-		ID   string `json:"id"`
-		Name string `json:"name"`
-	} `json:"type"`
+	Type     model.CheckPayloadType `json:"type"`
 	Settings struct {
 		DefinitionRef struct {
 			ID      string `json:"id"`
@@ -95,17 +92,13 @@ type InvokeRestAPICheckPayload struct {
 			SuccessCriteria              string `json:"successCriteria"`
 			Headers                      string `json:"headers"`
 		} `json:"inputs"`
-		RetryInterval       int64         `json:"retryInterval"`
+		RetryInterval       int64       `json:"retryInterval"`
 		LinkedVariableGroup interface{} `json:"linkedVariableGroup"`
 	} `json:"settings"`
-	Resource struct {
-		Type string `json:"type"`
-		ID   string `json:"id"`
-	} `json:"resource"`
-	Timeout int64 `json:"timeout"`
-	ID string `json:"id,omitempty"`
+	Resource model.CheckResource `json:"resource"`
+	Timeout  int64               `json:"timeout"`
+	ID       string              `json:"id,omitempty"`
 }
-
 
 func NewInvokeRestCheckPayload() InvokeRestAPICheckPayload {
 	jsonPayload := `{
@@ -155,15 +148,15 @@ func NewInvokeRestCheckPayload() InvokeRestAPICheckPayload {
 type InvokeRESTAPIValues struct {
 	ServiceConnectionId string
 	LinkedVariableGroup string
-	Timeout int64
-	RetryInterval int64
+	Timeout             int64
+	RetryInterval       int64
 
 	DisplayName string
-	Method string
+	Method      string
 	UseCallback bool // True is Callback, false is ApiResponse
 
-	Body string
-	UrlSuffix string
+	Body            string
+	UrlSuffix       string
 	SuccessCriteria string
-	Headers map[string]string
+	Headers         map[string]string
 }

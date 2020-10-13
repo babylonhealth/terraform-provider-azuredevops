@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/client"
+	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/common/client"
 	"log"
 	"os"
 	"strings"
@@ -51,6 +51,7 @@ type AggregatedClient struct {
 	IdentityClient                identity.Client
 	WorkItemTrackingClient        workitemtracking.Client
 	InvokeCheckClient             client.ChecksClient
+	ManualApprovalCheckClient     client.ManualApprovalClient
 	Ctx                           context.Context
 }
 
@@ -156,6 +157,7 @@ func GetAzdoClient(azdoPAT string, organizationURL string, tfVersion string) (*A
 	}
 
 	invokeChecksClient := client.NewClient(connection.BaseUrl, connection.AuthorizationString, connection.Timeout)
+	manualApprovalClient := client.NewClient(connection.BaseUrl, connection.AuthorizationString, connection.Timeout)
 
 	aggregatedClient := &AggregatedClient{
 		OrganizationURL:               organizationURL,
@@ -174,6 +176,7 @@ func GetAzdoClient(azdoPAT string, organizationURL string, tfVersion string) (*A
 		IdentityClient:                identityClient,
 		WorkItemTrackingClient:        workitemtrackingClient,
 		InvokeCheckClient:             invokeChecksClient,
+		ManualApprovalCheckClient:     manualApprovalClient,
 		Ctx:                           ctx,
 	}
 

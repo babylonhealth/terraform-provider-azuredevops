@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/client"
-	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks"
+	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/common/resource"
+	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/invokerestapi/model"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/tfhelper"
 	"strconv"
 )
@@ -16,73 +17,73 @@ func ResourceCheckInvokeRestAPI() *schema.Resource {
 		Create: createCheck,
 		Read:   readCheck,
 		Update: updateCheck,
-		Delete: deleteCheck,
-		Exists: existsCheck,
+		Delete: resource.DeleteCheck,
+		Exists: resource.ExistsCheck,
 	}
 	r.Schema = map[string]*schema.Schema{}
 	r.Schema["project_id"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Required: true,
 		ForceNew: true,
 	}
 	r.Schema["resource_id"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Required: true,
 		ForceNew: true,
 	}
 	r.Schema["service_connection_id"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Required: true,
 	}
 	//ToDo: type will be either "endpoint" or "queue"
 	// current implementation defaults to endpoint - service endpoint
 	// queue support will be added in further ticket
 	r.Schema["type"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Required: true,
 	}
 
 	r.Schema["linked_variable_group"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Optional: true,
 	}
 	r.Schema["timeout"] = &schema.Schema{
-		Type: schema.TypeInt,
+		Type:     schema.TypeInt,
 		Required: false,
 		Optional: true,
 	}
 	r.Schema["retry_interval"] = &schema.Schema{
-		Type: schema.TypeInt,
+		Type:     schema.TypeInt,
 		Optional: true,
 	}
 	r.Schema["display_name"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Required: true,
 	}
 
 	r.Schema["method"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Required: true,
 	}
 	r.Schema["use_callback"] = &schema.Schema{
-		Type: schema.TypeBool,
+		Type:     schema.TypeBool,
 		Required: true,
 	}
 	r.Schema["body"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Optional: true,
 	}
 	r.Schema["url_suffix"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Optional: true,
 	}
 
 	r.Schema["success_criteria"] = &schema.Schema{
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Optional: true,
 	}
 	r.Schema["headers"] = &schema.Schema{
-		Type: schema.TypeMap,
+		Type:     schema.TypeMap,
 		Optional: true,
 	}
 
@@ -100,7 +101,7 @@ func createCheck(d *schema.ResourceData, m interface{}) error {
 
 	check := buildInvokeRESTAPIValuesFromSchema(d)
 
-	resp, err := clients.InvokeCheckClient.AddCheck(projectID, resourceID, check)
+	resp, err := clients.InvokeCheckClient.AddInvokeRestAPICheck(projectID, resourceID, check)
 	if err != nil {
 		return fmt.Errorf("error creating check in Azure DevOps: %+v", err)
 	}
@@ -111,7 +112,6 @@ func createCheck(d *schema.ResourceData, m interface{}) error {
 
 	return nil
 }
-
 
 // See Resource documentation.
 func readCheck(d *schema.ResourceData, m interface{}) error {
@@ -126,7 +126,7 @@ func readCheck(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	checkConfig, found, err := clients.InvokeCheckClient.GetCheckByID(projectId, resourceId, idInt)
+	checkConfig, found, err := clients.InvokeCheckClient.GetInvokeRestAPICheckByID(projectId, resourceId, idInt)
 	if err != nil {
 		return err
 	}
@@ -172,7 +172,7 @@ func updateCheck(d *schema.ResourceData, m interface{}) error {
 
 	check := buildInvokeRESTAPIValuesFromSchema(d)
 
-	_, err := clients.InvokeCheckClient.UpdateCheck(projectID, resourceID, d.Id() , check)
+	_, err := clients.InvokeCheckClient.UpdateCheck(projectID, resourceID, d.Id(), check)
 	if err != nil {
 		return fmt.Errorf("error creating check in Azure DevOps: %+v", err)
 	}
@@ -183,35 +183,7 @@ func updateCheck(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-// See Resource documentation.
-func deleteCheck(d *schema.ResourceData, m interface{}) error {
-	clients := m.(*client.AggregatedClient)
-
-	projectID := d.Get("project_id").(string)
-	checkId := d.Id()
-
-	return clients.InvokeCheckClient.DeleteCheck(projectID, checkId)
-}
-
-// See Resource documentation.
-func existsCheck(d *schema.ResourceData, m interface{}) (bool, error) {
-	clients := m.(*client.AggregatedClient)
-
-	projectId := d.Get("project_id").(string)
-	resourceId := d.Get("resource_id").(string)
-	id := d.Id()
-
-	idInt, err := strconv.ParseInt(id, 10, 0)
-	if err != nil {
-		return false, err
-	}
-
-	_, found, err := clients.InvokeCheckClient.GetCheckByID(projectId, resourceId, idInt)
-
-	return found, err
-}
-
-func buildInvokeRESTAPIValuesFromSchema(d *schema.ResourceData) checks.InvokeRESTAPIValues {
+func buildInvokeRESTAPIValuesFromSchema(d *schema.ResourceData) model.InvokeRESTAPIValues {
 	timeout := d.Get("timeout").(int)
 	retryInterval := d.Get("retry_interval").(int)
 
@@ -224,7 +196,7 @@ func buildInvokeRESTAPIValuesFromSchema(d *schema.ResourceData) checks.InvokeRES
 		headersMap[k] = s
 	}
 
-	check := checks.InvokeRESTAPIValues{
+	check := model.InvokeRESTAPIValues{
 		ServiceConnectionId: d.Get("service_connection_id").(string),
 		LinkedVariableGroup: d.Get("linked_variable_group").(string),
 		Timeout:             int64(timeout),

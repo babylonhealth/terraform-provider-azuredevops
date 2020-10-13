@@ -5,7 +5,8 @@ import (
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/client"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/build"
-	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/resource"
+	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/invokerestapi/resource"
+	manualapproval "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/manualapproval/resource"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/core"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/git"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/graph"
@@ -51,6 +52,7 @@ func Provider() *schema.Provider {
 			"azuredevops_area_permissions":                 permissions.ResourceAreaPermissions(),
 			"azuredevops_iteration_permissions":            permissions.ResourceIterationPermissions(),
 			"azuredevops_check_invokerestapi":              resource.ResourceCheckInvokeRestAPI(),
+			"azuredevops_check_manualapproval":             manualapproval.ResourceCheckManualApproval(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"azuredevops_agent_pool":       taskagent.DataAgentPool(),

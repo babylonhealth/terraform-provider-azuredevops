@@ -16,7 +16,7 @@ import (
 
 func TestResourceServiceEndpointGenericWebhook(t *testing.T) {
 	tests := []struct {
-		name string
+		name           string
 		expectedSchema map[string]*schema.Schema
 	}{
 		{
@@ -96,23 +96,23 @@ func Test_expandServiceEndpointGenericWebhook(t *testing.T) {
 	type args struct {
 		username string
 		password string
-		url string
-		project string
+		url      string
+		project  string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    *serviceendpoint.ServiceEndpoint
-		wantProject   *string
-		wantErr bool
+		name        string
+		args        args
+		want        *serviceendpoint.ServiceEndpoint
+		wantProject *string
+		wantErr     bool
 	}{
 		{
 			name: "test expandServiceEndpoint",
 			args: args{
 				username: "user",
 				password: "password",
-				url: "http://http.cat",
-				project: "project",
+				url:      "http://http.cat",
+				project:  "project",
 			},
 			want: &serviceendpoint.ServiceEndpoint{
 				Authorization: &serviceendpoint.EndpointAuthorization{
@@ -120,13 +120,13 @@ func Test_expandServiceEndpointGenericWebhook(t *testing.T) {
 						"username": "user",
 						"password": "password",
 					},
-					Scheme:     converter.String("UsernamePassword"),
+					Scheme: converter.String("UsernamePassword"),
 				},
-				Data: &map[string]string{},
+				Data:        &map[string]string{},
 				Description: converter.String("Managed by Terraform"),
-				Owner: converter.String("library"),
-				Type: converter.String("generic"),
-				Url: converter.String("http://http.cat"),
+				Owner:       converter.String("library"),
+				Type:        converter.String("generic"),
+				Url:         converter.String("http://http.cat"),
 			},
 			wantProject: converter.String("project"),
 		},
@@ -185,8 +185,8 @@ func Test_flattenServiceEndpointGenericWebhook(t *testing.T) {
 		projectID       *string
 	}
 	tests := []struct {
-		name string
-		args args
+		name     string
+		args     args
 		expected map[string]string
 	}{
 		{
@@ -194,7 +194,7 @@ func Test_flattenServiceEndpointGenericWebhook(t *testing.T) {
 			args: args{
 				d: &schema.ResourceData{},
 				serviceEndpoint: &serviceendpoint.ServiceEndpoint{
-					Id: converter.UUID("1ceae7ff-565c-4cdf-9214-6e2246cba764"),
+					Id:  converter.UUID("1ceae7ff-565c-4cdf-9214-6e2246cba764"),
 					Url: converter.String("http://http.cat"),
 					Authorization: &serviceendpoint.EndpointAuthorization{
 						Parameters: &map[string]string{
@@ -207,15 +207,15 @@ func Test_flattenServiceEndpointGenericWebhook(t *testing.T) {
 				projectID: converter.String("project"),
 			},
 			expected: map[string]string{
-				"id": "1ceae7ff-565c-4cdf-9214-6e2246cba764",
-				"authorization.%": "1",
-				"authorization.scheme": "UsernamePassword",
-				"description" : "",
-				"password": "password1",
-				"project_id" : "project",
+				"id":                    "1ceae7ff-565c-4cdf-9214-6e2246cba764",
+				"authorization.%":       "1",
+				"authorization.scheme":  "UsernamePassword",
+				"description":           "",
+				"password":              "password1",
+				"project_id":            "project",
 				"service_endpoint_name": "",
-				"url": "http://http.cat",
-				"username": "user1",
+				"url":                   "http://http.cat",
+				"username":              "user1",
 			},
 		},
 	}
