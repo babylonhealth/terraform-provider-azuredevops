@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/common/client"
+	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/githubapp/githubappclient"
 	"log"
 	"os"
 	"strings"
@@ -52,6 +53,7 @@ type AggregatedClient struct {
 	WorkItemTrackingClient        workitemtracking.Client
 	InvokeCheckClient             client.ChecksClient
 	ManualApprovalCheckClient     client.ManualApprovalClient
+	GitAppClient                  githubappclient.GithubAppClient
 	Ctx                           context.Context
 }
 
@@ -159,6 +161,8 @@ func GetAzdoClient(azdoPAT string, organizationURL string, tfVersion string) (*A
 	invokeChecksClient := client.NewClient(connection.BaseUrl, connection.AuthorizationString, connection.Timeout)
 	manualApprovalClient := client.NewClient(connection.BaseUrl, connection.AuthorizationString, connection.Timeout)
 
+	githubAppClient := githubappclient.NewGithubApp(connection.BaseUrl, connection.AuthorizationString, connection.Timeout)
+
 	aggregatedClient := &AggregatedClient{
 		OrganizationURL:               organizationURL,
 		CoreClient:                    coreClient,
@@ -177,6 +181,7 @@ func GetAzdoClient(azdoPAT string, organizationURL string, tfVersion string) (*A
 		WorkItemTrackingClient:        workitemtrackingClient,
 		InvokeCheckClient:             invokeChecksClient,
 		ManualApprovalCheckClient:     manualApprovalClient,
+		GitAppClient:                  githubAppClient,
 		Ctx:                           ctx,
 	}
 

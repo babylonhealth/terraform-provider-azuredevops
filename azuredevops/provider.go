@@ -9,6 +9,7 @@ import (
 	manualapproval "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/manualapproval/resource"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/core"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/git"
+	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/githubapp"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/graph"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/memberentitlementmanagement"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/permissions"
@@ -43,16 +44,17 @@ func Provider() *schema.Provider {
 			"azuredevops_git_repository":                   git.ResourceGitRepository(),
 			"azuredevops_user_entitlement":                 memberentitlementmanagement.ResourceUserEntitlement(),
 			"azuredevops_group_membership":                 graph.ResourceGroupMembership(),
-			"azuredevops_agent_pool":                       taskagent.ResourceAgentPool(),
-			"azuredevops_agent_queue":                      taskagent.ResourceAgentQueue(),
-			"azuredevops_group":                            graph.ResourceGroup(),
-			"azuredevops_project_permissions":              permissions.ResourceProjectPermissions(),
-			"azuredevops_git_permissions":                  permissions.ResourceGitPermissions(),
-			"azuredevops_workitemquery_permissions":        permissions.ResourceWorkItemQueryPermissions(),
-			"azuredevops_area_permissions":                 permissions.ResourceAreaPermissions(),
-			"azuredevops_iteration_permissions":            permissions.ResourceIterationPermissions(),
-			"azuredevops_check_invokerestapi":              resource.ResourceCheckInvokeRestAPI(),
-			"azuredevops_check_manualapproval":             manualapproval.ResourceCheckManualApproval(),
+			"azuredevops_agent_pool":                taskagent.ResourceAgentPool(),
+			"azuredevops_agent_queue":               taskagent.ResourceAgentQueue(),
+			"azuredevops_group":                     graph.ResourceGroup(),
+			"azuredevops_project_permissions":       permissions.ResourceProjectPermissions(),
+			"azuredevops_git_permissions":           permissions.ResourceGitPermissions(),
+			"azuredevops_workitemquery_permissions": permissions.ResourceWorkItemQueryPermissions(),
+			"azuredevops_area_permissions":          permissions.ResourceAreaPermissions(),
+			"azuredevops_iteration_permissions":     permissions.ResourceIterationPermissions(),
+			"azuredevops_check_invokerestapi":       resource.ResourceCheckInvokeRestAPI(),
+			"azuredevops_check_manualapproval":      manualapproval.ResourceCheckManualApproval(),
+			"azuredevops_serviceendpoint_githubapp":                    githubapp.ResourceGithubApp(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"azuredevops_agent_pool":       taskagent.DataAgentPool(),

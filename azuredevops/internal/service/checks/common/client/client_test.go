@@ -56,7 +56,7 @@ func TestClient_DeleteCheck(t *testing.T) {
 			c := NewClient(ts.URL, personalAccessToken, &duration)
 
 			if err := c.DeleteCheck(tt.args.projectID, tt.args.checkID); (err != nil) != tt.wantErr {
-				t.Errorf("DeleteCheck() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("DeleteGithubApp() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
