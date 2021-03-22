@@ -6,6 +6,6 @@ ARG SEMVER_VERSION
 
 RUN \
     set -eux \
-    && cd /root/.terraform.d/plugins/babylonhealth.com/babylonhealth/azuredevops/ \
-    && ls -la \
-    && mv "$(ls)" "${SEMVER_VERSION}"
+    && cd /usr/local/share/terraform/plugins/babylonhealth.com/babylonhealth/azuredevops/ \
+    && mv "$(ls -1 | grep -v index.json)" "${SEMVER_VERSION}" \
+    && chmod -R go+rx /usr/local/share/terraform

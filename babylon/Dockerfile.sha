@@ -1,7 +1,18 @@
 FROM hashicorp/terraform:0.13.3
 
-RUN mkdir -p /opt/babylon
+COPY babylon/terraform.d /usr/local/share/terraform/
+COPY babylon/.terraformrc /opt/.terraformrc
+COPY babylon/providers-mirror /opt/providers-mirror/
 
-COPY babylon/terraform.d /root/.terraform.d
+ENV TF_CLI_CONFIG_FILE=/opt/.terraformrc
+
+RUN \
+    set -eux \
+    && mkdir -p /opt/babylon \
+    && cd /opt/providers-mirror \
+    && terraform providers mirror /usr/local/share/terraform/plugins \
+    && cd /opt \
+    && rm -rfv /opt/providers-mirror \
+    && chmod -R go+rx /usr/local/share/terraform/ /opt
 
 WORKDIR /opt/babylon
