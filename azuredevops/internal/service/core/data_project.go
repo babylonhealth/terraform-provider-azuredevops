@@ -11,34 +11,47 @@ import (
 
 // DataProject schema and implementation for project data source
 func DataProject() *schema.Resource {
-	baseSchema := ResourceProject()
-	for k, v := range baseSchema.Schema {
-		if k != "project_name" {
-			baseSchema.Schema[k] = &schema.Schema{
-				Type:     v.Type,
-				Computed: true,
-			}
-		}
-	}
-
-	baseSchema.Schema["project_name"] = &schema.Schema{
-		Type:         schema.TypeString,
-		Optional:     true,
-		ValidateFunc: validation.StringIsNotWhiteSpace,
-	}
-
-	baseSchema.Schema["project_id"] = &schema.Schema{
-		Type:         schema.TypeString,
-		Optional:     true,
-		ValidateFunc: validation.StringIsNotWhiteSpace,
-		ConflictsWith: []string{
-			"project_name",
-		},
-	}
-
 	return &schema.Resource{
-		Read:   dataProjectRead,
-		Schema: baseSchema.Schema,
+		Read: dataProjectRead,
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringIsNotWhiteSpace,
+			},
+			"project_id": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringIsNotWhiteSpace,
+				ConflictsWith: []string{
+					"name",
+				},
+			},
+			"description": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"visibility": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"version_control": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"work_item_template": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"process_template_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"features": {
+				Type:     schema.TypeMap,
+				Computed: true,
+			},
+		},
 	}
 }
 
@@ -47,22 +60,24 @@ func DataProject() *schema.Resource {
 func dataProjectRead(d *schema.ResourceData, m interface{}) error {
 	clients := m.(*client.AggregatedClient)
 
-	name := d.Get("project_name").(string)
+	name := d.Get("name").(string)
 	id := d.Get("project_id").(string)
 
 	if name == "" && id == "" {
-		return fmt.Errorf("Either project_id or project_name must be set")
+		return fmt.Errorf("Either project_id or name must be set ")
 	}
 
 	project, err := projectRead(clients, id, name)
+
 	if err != nil {
 		if utils.ResponseWasNotFound(err) {
-			return fmt.Errorf("Project with name %s does not exist", name)
+			return fmt.Errorf("Project with name %s or ID %s does not exist ", name, id)
 		}
-		return fmt.Errorf("Error looking up project with Name %s, %w", name, err)
+		return fmt.Errorf("Error looking up project with Name %s or ID %s, %+v ", name, id, err)
 	}
 
 	err = flattenProject(clients, d, project)
+	d.Set("project_id", project.Id.String())
 	if err != nil {
 		return fmt.Errorf("Error flattening project: %v", err)
 	}

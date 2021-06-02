@@ -17,7 +17,7 @@ the `azuredevops_resource_authorization` resource can be used to grant authoriza
 
 ```hcl
 resource "azuredevops_project" "project" {
-  project_name = "Sample Project"
+  name = "Sample Project"
 }
 
 data "azuredevops_agent_pool" "pool" {
@@ -60,5 +60,5 @@ In addition to all arguments above, the following attributes are exported:
 Azure DevOps Agent Pools can be imported using the project ID and agent queue ID, e.g.
 
 ```sh
-terraform import azuredevops_agent_queue.q 44cbf614-4dfd-4032-9fae-87b0da3bec30/1381
+$ terraform import azuredevops_agent_queue.q 00000000-0000-0000-0000-000000000000/0
 ```

@@ -16,6 +16,7 @@ import (
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/converter"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/suppress"
+	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/tfhelper"
 )
 
 // RepoInitType strategy for initializing the repo
@@ -39,11 +40,11 @@ var RepoInitTypeValues = repoInitTypeValuesType{
 // ResourceGitRepository schema and implementation for git repo resource
 func ResourceGitRepository() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceGitRepositoryCreate,
-		Read:   resourceGitRepositoryRead,
-		Update: resourceGitRepositoryUpdate,
-		Delete: resourceGitRepositoryDelete,
-
+		Create:   resourceGitRepositoryCreate,
+		Read:     resourceGitRepositoryRead,
+		Update:   resourceGitRepositoryUpdate,
+		Delete:   resourceGitRepositoryDelete,
+		Importer: tfhelper.ImportProjectQualifiedResource(),
 		Schema: map[string]*schema.Schema{
 			"project_id": {
 				Type:             schema.TypeString,
@@ -96,9 +97,10 @@ func ResourceGitRepository() *schema.Resource {
 				Computed: true,
 			},
 			"initialization": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Required: true,
 				MaxItems: 1,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"init_type": {
@@ -117,7 +119,6 @@ func ResourceGitRepository() *schema.Resource {
 							ForceNew:     true,
 							ValidateFunc: validation.StringInSlice([]string{"Git"}, false),
 							RequiredWith: []string{"initialization.0.source_url"},
-							Default:      "Git",
 						},
 						"source_url": {
 							Type:         schema.TypeString,
@@ -178,7 +179,7 @@ func resourceGitRepositoryCreate(d *schema.ResourceData, m interface{}) error {
 		}
 		_, importErr := createImportRequest(clients, importRequest, projectID.String(), *createdRepo.Name)
 		if importErr != nil {
-			return fmt.Errorf("Error import repository in Azure DevOps: %+v ", err)
+			return fmt.Errorf("Error import repository in Azure DevOps: %+v ", importErr)
 		}
 	}
 
@@ -356,6 +357,7 @@ func resourceGitRepositoryDelete(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	d.SetId("")
 	return nil
 }
@@ -365,7 +367,6 @@ func deleteGitRepository(clients *client.AggregatedClient, repoID string) error 
 	if err != nil {
 		return fmt.Errorf("Invalid repositoryId UUID: %s", repoID)
 	}
-
 	return clients.GitReposClient.DeleteRepository(clients.Ctx, git.DeleteRepositoryArgs{
 		RepositoryId: &uuid,
 	})
@@ -429,7 +430,7 @@ func expandGitRepository(d *schema.ResourceData) (*git.GitRepository, *repoIniti
 	}
 
 	var initialization *repoInitializationMeta = nil
-	initData := d.Get("initialization").(*schema.Set).List()
+	initData := d.Get("initialization").([]interface{})
 	// Note: If configured, this will be of length 1 based on the schema definition above.
 	if len(initData) == 1 {
 		initValues := initData[0].(map[string]interface{})

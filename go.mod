@@ -1,6 +1,6 @@
 module github.com/microsoft/terraform-provider-azuredevops
 
-go 1.13
+go 1.16
 
 require (
 	github.com/ahmetb/go-linq v3.0.0+incompatible
@@ -11,7 +11,7 @@ require (
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/hashicorp/go-uuid v1.0.1
 	github.com/hashicorp/terraform v0.12.23
-	github.com/hashicorp/terraform-plugin-sdk v1.10.0
+	github.com/hashicorp/terraform-plugin-sdk v1.13.1
 	github.com/microsoft/azure-devops-go-api/azuredevops v1.0.0-b3
 	github.com/sirupsen/logrus v1.2.0
 	github.com/stretchr/testify v1.4.0

@@ -1,10 +1,15 @@
 
-provider "azuredevops" {
-  version = ">= 0.0.1"
+terraform {
+  required_providers {
+    azuredevops = {
+      source = "microsoft/azuredevops"
+      version = ">=0.1.0"
+    }
+  }
 }
 
 resource "azuredevops_project" "project" {
-  project_name       = "terraform-provider-azuredevops"
+  name       = "terraform-provider-azuredevops"
   description        = ""
   visibility         = "private"
   version_control    = "Git"
@@ -16,7 +21,7 @@ resource "azuredevops_serviceendpoint_github" "github_serviceendpoint" {
   service_endpoint_name = "GitHub Service Connection"
 
   auth_personal {
-    # personalAccessToken = "..." Or set with `AZDO_GITHUB_SERVICE_CONNECTION_PAT` env var
+    # personal_access_token = "..." Or set with `AZDO_GITHUB_SERVICE_CONNECTION_PAT` env var
   }
 }
 

@@ -41,6 +41,12 @@ func HclForkedGitRepoResource(projectName string, gitRepoName string, gitForkedR
 
 // HclGroupDataSource HCL describing an AzDO Group Data Source
 func HclGroupDataSource(projectName string, groupName string) string {
+	if projectName == "" {
+		return fmt.Sprintf(`
+data "azuredevops_group" "group" {
+	name       = "%s"
+}`, groupName)
+	}
 	dataSource := fmt.Sprintf(`
 data "azuredevops_group" "group" {
 	project_id = azuredevops_project.project.id
@@ -58,7 +64,7 @@ func HclProjectResource(projectName string) string {
 	}
 	return fmt.Sprintf(`
 resource "azuredevops_project" "project" {
-	project_name       = "%[1]s"
+	name       = "%[1]s"
 	description        = "%[1]s-description"
 	visibility         = "private"
 	version_control    = "Git"
@@ -79,7 +85,7 @@ func HclProjectResourceWithFeature(projectName string, featureStateTestplans str
 	}
 	return fmt.Sprintf(`
 resource "azuredevops_project" "project" {
-	project_name       = "%s"
+	name       = "%s"
 	description        = "%s-description"
 	visibility         = "private"
 	version_control    = "Git"
@@ -114,7 +120,7 @@ func HclProjectsDataSource(projectName string) string {
 %s
 
 data "azuredevops_projects" "project-list" {
-	project_name = azuredevops_project.project.project_name
+	name = azuredevops_project.project.name
 }
 `, projectResource)
 }
@@ -122,7 +128,7 @@ data "azuredevops_projects" "project-list" {
 // HclProjectsDataSourceWithStateAndInvalidName creates HCL for a multi value data source for AzDo projects
 func HclProjectsDataSourceWithStateAndInvalidName() string {
 	return `data "azuredevops_projects" "project-list" {
-		project_name = "_invalid_project_name"
+		name = "invalid_name"
 		state = "wellFormed"
 	}`
 }
@@ -131,7 +137,7 @@ func HclProjectsDataSourceWithStateAndInvalidName() string {
 func HclProjectGitRepository(projectName string, gitRepoName string) string {
 	return fmt.Sprintf(`
 data "azuredevops_project" "project" {
-	project_name = "%s"
+	name = "%s"
 }
 
 data "azuredevops_git_repository" "repository" {
@@ -144,7 +150,7 @@ data "azuredevops_git_repository" "repository" {
 func HclProjectGitRepositories(projectName string, gitRepoName string) string {
 	return fmt.Sprintf(`
 data "azuredevops_project" "project" {
-	project_name = azuredevops_project.project.project_name
+	name = azuredevops_project.project.name
 }
 
 data "azuredevops_git_repositories" "repositories" {
@@ -190,6 +196,50 @@ resource "azuredevops_serviceendpoint_github" "serviceendpoint" {
 
 	projectResource := HclProjectResource(projectName)
 	return fmt.Sprintf("%s\n%s", projectResource, serviceEndpointResource)
+}
+
+func HclServiceEndpointGitHubEnterpriseResource(projectName string, serviceEndpointName string) string {
+	serviceEndpointResource := fmt.Sprintf(`
+resource "azuredevops_serviceendpoint_github_enterprise" "serviceendpoint" {
+	project_id             = azuredevops_project.project.id
+	service_endpoint_name  = "%s"
+	url                    = "https://github.contoso.com"
+	auth_personal {
+		personal_access_token = "hcl_test_token_basic"
+	}
+}`, serviceEndpointName)
+
+	projectResource := HclProjectResource(projectName)
+	return fmt.Sprintf("%s\n%s", projectResource, serviceEndpointResource)
+}
+
+// HclServiceEndpointRunPipelineResource HCL describing an AzDO service endpoint
+func HclServiceEndpointRunPipelineResourceSimple(serviceEndpointName string) string {
+	serviceEndpointResource := fmt.Sprintf(`
+resource "azuredevops_serviceendpoint_runpipeline" "serviceendpoint" {
+  project_id             = azuredevops_project.project.id
+  organization_name      = "example"
+  service_endpoint_name  = "%[1]s"
+	auth_personal {
+	}
+}`, serviceEndpointName)
+
+	return serviceEndpointResource
+}
+
+func HclServiceEndpointRunPipelineResource(serviceEndpointName string, accessToken string, description string) string {
+	serviceEndpointResource := fmt.Sprintf(`
+resource "azuredevops_serviceendpoint_runpipeline" "serviceendpoint" {
+  project_id             = azuredevops_project.project.id
+  organization_name      = "example"
+  service_endpoint_name  = "%[1]s"
+  auth_personal {
+    personal_access_token= "%[2]s"
+  }
+	description = "%[3]s"
+}`, serviceEndpointName, accessToken, description)
+
+	return serviceEndpointResource
 }
 
 // HclServiceEndpointDockerRegistryResource HCL describing an AzDO service endpoint
@@ -442,12 +492,23 @@ data "azuredevops_agent_pools" "pools" {
 }`
 }
 
+// HclAgentQueueDataSource HCL describing a data source for an AzDO Agent Queue
+func HclAgentQueueDataSource(projectName, queueName string) string {
+	return fmt.Sprintf(`
+%s
+
+data "azuredevops_agent_queue" "queue" {
+	project_id = azuredevops_project.project.id
+	name = "%s"
+}`, HclProjectResource(projectName), queueName)
+}
+
 // HclAgentQueueResource HCL describing an AzDO Agent Pool and Agent Queue
 func HclAgentQueueResource(projectName, poolName string) string {
 	poolHCL := HclAgentPoolResource(poolName)
 	queueHCL := fmt.Sprintf(`
 resource "azuredevops_project" "p" {
-	project_name = "%s"
+	name = "%s"
 }
 
 resource "azuredevops_agent_queue" "q" {
@@ -592,7 +653,7 @@ resource "azuredevops_group_membership" "membership" {
 func HclGroupMembershipDependencies(projectName, groupName, userPrincipalName string) string {
 	return fmt.Sprintf(`
 resource "azuredevops_project" "project" {
-  project_name = "%s"
+  name = "%s"
 }
 data "azuredevops_group" "group" {
   project_id = azuredevops_project.project.id

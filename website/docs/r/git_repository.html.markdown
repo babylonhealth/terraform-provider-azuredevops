@@ -15,7 +15,7 @@ Manages a git repository within Azure DevOps.
 
 ```hcl
 resource "azuredevops_project" "project" {
-  project_name       = "Sample Project"
+  name       = "Sample Project"
   visibility         = "private"
   version_control    = "Git"
   work_item_template = "Agile"
@@ -64,12 +64,12 @@ The following arguments are supported:
 - `project_id` - (Required) The project ID or project name.
 - `name` - (Required) The name of the git repository.
 - `parent_repository_id` - (Optional) The ID of a Git project from which a fork is to be created.
-- `initialization` - (Optional) An `initialization` block as documented below.
+- `initialization` - (Required) An `initialization` block as documented below.
 
 `initialization` - (Required) block supports the following:
 
 - `init_type` - (Required) The type of repository to create. Valid values: `Uninitialized`, `Clean` or `Import`. Defaults to `Uninitialized`.
-- `source_type` - (Optional) Type of the source repository. Used if the `init_type` is `Import`. Valid values: `Git`. Defaults to `Git`.
+- `source_type` - (Optional) Type of the source repository. Used if the `init_type` is `Import`. Valid values: `Git`.
 - `source_url` - (Optional) The URL of the source repository. Used if the `init_type` is `Import`.
 
 ## Attributes Reference
@@ -88,4 +88,17 @@ In addition to all arguments above, except `initialization`, the following attri
 
 ## Relevant Links
 
-- [Azure DevOps Service REST API 5.1 - Agent Pools](https://docs.microsoft.com/en-us/rest/api/azure/devops/git/repositories?view=azure-devops-rest-5.1)
+- [Azure DevOps Service REST API 5.1 - Git Repositories](https://docs.microsoft.com/en-us/rest/api/azure/devops/git/repositories?view=azure-devops-rest-5.1)
+
+## Import
+
+Azure DevOps Repositories can be imported using the repo name or by the repo Guid e.g.
+
+```sh
+$ terraform import azuredevops_git_repository.repository projectName/repoName
+```
+or
+
+```sh
+$ terraform import azuredevops_git_repository.repository projectName/00000000-0000-0000-0000-000000000000
+```

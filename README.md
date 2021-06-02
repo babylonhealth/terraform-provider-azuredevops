@@ -19,12 +19,17 @@ The AzureRM Provider supports Terraform 0.12.x and later.
 # Make sure to set the following environment variables:
 #   AZDO_PERSONAL_ACCESS_TOKEN
 #   AZDO_ORG_SERVICE_URL
-provider "azuredevops" {
-  version = ">= 0.0.1"
+terraform {
+  required_providers {
+    azuredevops = {
+      source = "microsoft/azuredevops"
+      version = ">=0.1.0"
+    }
+  }
 }
 
 resource "azuredevops_project" "project" {
-  project_name = "My Awesome Project"
+  name = "My Awesome Project"
   description  = "All of my awesomee things"
 }
 
@@ -52,8 +57,8 @@ resource "azuredevops_build_definition" "build_definition" {
 
 ## Developer Requirements
 
-* [Terraform](https://www.terraform.io/downloads.html) version 0.12.x +
-* [Go](https://golang.org/doc/install) version 1.13.x (to build the provider plugin)
+* [Terraform](https://www.terraform.io/downloads.html) version 0.13.x +
+* [Go](https://golang.org/doc/install) version 1.16.x (to build the provider plugin)
 
 If you're on Windows you'll also need:
 
@@ -71,7 +76,7 @@ As [described below](#build-using-powerShell-scripts) we provide some PowerShell
 
 ## Developing the Provider
 
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.13+ is **required**). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
+If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.16+ is **required**). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
 
 ### Using the GOPATH model
 

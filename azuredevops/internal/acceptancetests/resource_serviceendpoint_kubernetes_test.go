@@ -21,6 +21,7 @@ const terraformServiceEndpointNode = "azuredevops_serviceendpoint_kubernetes.ser
 // validates that an apply followed by another apply (i.e., resource update) will be reflected in AzDO and the
 // underlying terraform state.
 func TestAccServiceEndpointKubernetesForAzureSubscriptionCreateAndUpdate(t *testing.T) {
+	t.Skip("Skipping test TestAccServiceEndpointKubernetesForAzureSubscriptionCreateAndUpdate: test resource limit")
 	authorizationType := "AzureSubscription"
 
 	var attrTestCheckFuncList []resource.TestCheckFunc
@@ -82,7 +83,7 @@ func runSvcEndpointAcceptanceTest(t *testing.T, attrTestCheckFuncList []resource
 		checkSvcEndpointKubernetesExists(serviceEndpointNameSecond),
 	)
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testutils.PreCheck(t, nil) },
 		Providers:    testutils.GetProviders(),
 		CheckDestroy: checkSvcEndpointKubernetesDestroyed,
@@ -121,7 +122,7 @@ func checkSvcEndpointKubernetesExists(expectedName string) resource.TestCheckFun
 }
 
 // verifies that all service endpoints referenced in the state are destroyed. This will be invoked
-// *after* terrafform destroys the resource but *before* the state is wiped clean.
+// *after* terraform destroys the resource but *before* the state is wiped clean.
 func checkSvcEndpointKubernetesDestroyed(s *terraform.State) error {
 	for _, resource := range s.RootModule().Resources {
 		if resource.Type != "azuredevops_serviceendpoint_kubernetes" {
