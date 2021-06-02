@@ -7,7 +7,7 @@ import (
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/tfhelper"
 )
 
-// ResourceServiceEndpointDockerRegistry schema and implementation for docker registry service endpoint resource
+// ResourceServiceEndpointGenericWebhook schema and implementation for docker registry service endpoint resource
 func ResourceServiceEndpointGenericWebhook() *schema.Resource {
 	r := genBaseServiceEndpointResource(flattenServiceEndpointGenericWebhook, expandServiceEndpointGenericWebhook)
 	r.Schema["url"] = &schema.Schema{

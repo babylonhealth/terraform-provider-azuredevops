@@ -14,6 +14,7 @@ PLUGIN_DIR="babylon/terraform.d/plugins/babylonhealth.com/babylonhealth/${PROVID
 
 run_compile() {
     go mod download
+    go mod verify
     go build
     chmod +x "${BINARY_NAME}"
 }

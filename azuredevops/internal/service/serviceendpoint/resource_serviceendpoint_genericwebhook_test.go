@@ -127,6 +127,7 @@ func Test_expandServiceEndpointGenericWebhook(t *testing.T) {
 				Owner:       converter.String("library"),
 				Type:        converter.String("generic"),
 				Url:         converter.String("http://http.cat"),
+				Name:        converter.String(""),
 			},
 			wantProject: converter.String("project"),
 		},

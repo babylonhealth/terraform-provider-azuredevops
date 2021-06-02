@@ -14,47 +14,47 @@ import (
  * Begin unit tests
  */
 
-func TestBuildPermissions_CreateBuildToken(t *testing.T) {
+func TestBuildPermissions_CreateBuildTokenBH(t *testing.T) {
 	projectID := "9083e944-8e9e-405e-960a-c80180aa71e6"
 	buildID := "29"
 	expectedToken := fmt.Sprintf("%s/%s", projectID, buildID)
 
 	d := getBuildPermissionsResource(t, projectID, buildID, false)
-	gotToken, err := createBuildToken(d, nil)
+	gotToken, err := createBuildTokenBH(d, nil)
 	assert.NotEmpty(t, gotToken)
 	assert.Nil(t, err)
 	assert.Equal(t, expectedToken, gotToken)
 
 	expectedErr := fmt.Errorf("failed to get 'project_id' from schema")
 	d = getBuildPermissionsResource(t, "", "", false)
-	token, err := createBuildToken(d, nil)
+	token, err := createBuildTokenBH(d, nil)
 	assert.Empty(t, token)
 	assert.Equal(t, expectedErr, err)
 
 	expectedToken = fmt.Sprintf("%s", projectID)
 	d = getBuildPermissionsResource(t, projectID, "", true)
 	err = d.Set("build_id", nil)
-	token, err = createBuildToken(d, nil)
+	token, err = createBuildTokenBH(d, nil)
 	assert.NotEmpty(t, gotToken)
 	assert.Nil(t, err)
 	assert.Equal(t, expectedToken, token)
 
 	expectedErr = fmt.Errorf("build_id cannot be set when project_level is true")
 	d = getBuildPermissionsResource(t, projectID, "1234", true)
-	token, err = createBuildToken(d, nil)
+	token, err = createBuildTokenBH(d, nil)
 	assert.Empty(t, token)
 	assert.Equal(t, expectedErr, err)
 
 	expectedErr = fmt.Errorf("build_id required when project_level is not true")
 	d = getBuildPermissionsResource(t, projectID, "", false)
-	token, err = createBuildToken(d, nil)
+	token, err = createBuildTokenBH(d, nil)
 	assert.Empty(t, token)
 	assert.Equal(t, expectedErr, err)
 
 	expectedErr = fmt.Errorf("build_id required when project_level is not true")
 	d = getBuildPermissionsResource(t, projectID, "1234", false)
 	err = d.Set("build_id", nil)
-	token, err = createBuildToken(d, nil)
+	token, err = createBuildTokenBH(d, nil)
 	assert.Empty(t, token)
 	assert.Equal(t, expectedErr, err)
 }

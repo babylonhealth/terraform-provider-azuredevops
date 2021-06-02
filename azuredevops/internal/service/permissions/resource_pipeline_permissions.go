@@ -40,7 +40,7 @@ func ResourcePipelinePermissions() *schema.Resource {
 func resourcePipelinePermissionsCreateOrUpdate(d *schema.ResourceData, m interface{}) error {
 	clients := m.(*client.AggregatedClient)
 
-	sn, err := securityhelper.NewSecurityNamespace(d, clients, securityhelper.SecurityNamespaceIDValues.Build, createBuildToken)
+	sn, err := securityhelper.NewSecurityNamespace(d, clients, securityhelper.SecurityNamespaceIDValues.Build, createBuildTokenBH)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func resourcePipelinePermissionsCreateOrUpdate(d *schema.ResourceData, m interfa
 func resourcePipelinePermissionsRead(d *schema.ResourceData, m interface{}) error {
 	clients := m.(*client.AggregatedClient)
 
-	sn, err := securityhelper.NewSecurityNamespace(d, clients, securityhelper.SecurityNamespaceIDValues.Build, createBuildToken)
+	sn, err := securityhelper.NewSecurityNamespace(d, clients, securityhelper.SecurityNamespaceIDValues.Build, createBuildTokenBH)
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func resourcePipelinePermissionsRead(d *schema.ResourceData, m interface{}) erro
 func resourcePipelinePermissionsDelete(d *schema.ResourceData, m interface{}) error {
 	clients := m.(*client.AggregatedClient)
 
-	sn, err := securityhelper.NewSecurityNamespace(d, clients, securityhelper.SecurityNamespaceIDValues.Build, createBuildToken)
+	sn, err := securityhelper.NewSecurityNamespace(d, clients, securityhelper.SecurityNamespaceIDValues.Build, createBuildTokenBH)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func resourcePipelinePermissionsDelete(d *schema.ResourceData, m interface{}) er
 	return nil
 }
 
-func createBuildToken(d *schema.ResourceData, clients *client.AggregatedClient) (string, error) {
+func createBuildTokenBH(d *schema.ResourceData, clients *client.AggregatedClient) (string, error) {
 	projectID, ok := d.GetOk("project_id")
 	if !ok {
 		return "", fmt.Errorf("failed to get 'project_id' from schema")

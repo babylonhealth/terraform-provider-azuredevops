@@ -3,7 +3,7 @@ version: 2
 
 prelude: &prelude
   docker:
-  - image: golang:1.13-alpine
+  - image: golang:1.16-alpine
   working_directory: ~/babylon
 
 use_docker: &use_docker setup_remote_docker
@@ -44,7 +44,8 @@ workflows:
     jobs:
     - test:
         <<: *not_master
-    - compile:
+    - build:
+        context: babylon
         <<: *not_master
 
   master-flow:
@@ -66,12 +67,6 @@ jobs:
     - *install_base
     - checkout
     - run: babylon/build test
-  compile:
-    <<: *prelude
-    steps:
-    - *install_base
-    - checkout
-    - run: babylon/build compile
   build:
     <<: *prelude
     steps:

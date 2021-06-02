@@ -3,9 +3,11 @@ module github.com/microsoft/terraform-provider-azuredevops
 go 1.16
 
 require (
+	//	patch versus microsoft-origin above
 	github.com/ahmetb/go-linq v3.0.0+incompatible
+	//	patch versus microsoft-origin below
 	github.com/go-test/deep v1.0.3
-	github.com/golang/mock v1.4.4
+	github.com/golang/mock v1.4.1
 	github.com/google/go-cmp v0.5.2
 	github.com/google/uuid v1.1.1
 	github.com/hashicorp/go-multierror v1.0.0
