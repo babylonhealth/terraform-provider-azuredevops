@@ -5,5 +5,7 @@ FROM quay.io/babylonhealth/azure-terraform:${SHA_VERSION}
 ARG SEMVER_VERSION
 
 RUN \
-    cd /root/.terraform.d/plugins/babylonhealth.com/babylonhealth/azuredevops/ \
-    && mv $(ls) ${SEMVER_VERSION}
+    set -eux \
+    && cd /root/.terraform.d/plugins/babylonhealth.com/babylonhealth/azuredevops/ \
+    && ls -la \
+    && mv "$(ls)" "${SEMVER_VERSION}"
