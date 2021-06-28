@@ -13,7 +13,7 @@ import (
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/tfhelper"
 )
 
-func TestResourceServiceEndpointBabylonAWSAssumeRole(t *testing.T) {
+func TestResourceServiceEndpointBabylonAwsIam(t *testing.T) {
 	tests := []struct {
 		name           string
 		expectedSchema map[string]*schema.Schema
@@ -73,17 +73,17 @@ func TestResourceServiceEndpointBabylonAWSAssumeRole(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			resource := ResourceServiceEndpointBabylonAWSAssumeRole()
+			resource := ResourceServiceEndpointBabylonAwsIam()
 			resourceSchema := resource.Schema
 
 			if diff := deep.Equal(resourceSchema, tt.expectedSchema); len(diff) > 0 {
-				t.Errorf("ResourceServiceEndpointBabylonAWSAssumeRole() mismatch:\n%s", diff)
+				t.Errorf("ResourceServiceEndpointBabylonAwsIam() mismatch:\n%s", diff)
 			}
 		})
 	}
 }
 
-func Test_expandServiceEndpointBabylonAWSAssumeRole(t *testing.T) {
+func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 	type args struct {
 		username string
 		password string
@@ -123,7 +123,7 @@ func Test_expandServiceEndpointBabylonAWSAssumeRole(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := ResourceServiceEndpointBabylonAWSAssumeRole()
+			r := ResourceServiceEndpointBabylonAwsIam()
 			resourceData := schema.TestResourceDataRaw(t, r.Schema, nil)
 
 			multiErr := &multierror.Error{}
@@ -147,23 +147,23 @@ func Test_expandServiceEndpointBabylonAWSAssumeRole(t *testing.T) {
 				t.Error(err)
 			}
 
-			got, got1, err := expandServiceEndpointBabylonAWSAssumeRole(resourceData)
+			got, got1, err := expandServiceEndpointBabylonAwsIam(resourceData)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("expandServiceEndpointBabylonAWSAssumeRole() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("expandServiceEndpointBabylonAwsIam() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if diff := deep.Equal(got, tt.want); len(diff) > 0 {
-				t.Errorf("expandServiceEndpointBabylonAWSAssumeRole() mismatch:\n%s", diff)
+				t.Errorf("expandServiceEndpointBabylonAwsIam() mismatch:\n%s", diff)
 			}
 
 			if diff := deep.Equal(got1, tt.wantProject); len(diff) > 0 {
-				t.Errorf("expandServiceEndpointBabylonAWSAssumeRole() got1 = %v, want %v", got1, tt.wantProject)
+				t.Errorf("expandServiceEndpointBabylonAwsIam() got1 = %v, want %v", got1, tt.wantProject)
 			}
 		})
 	}
 }
 
-func Test_flattenServiceEndpointBabylonAWSAssumeRole(t *testing.T) {
+func Test_flattenServiceEndpointBabylonAwsIam(t *testing.T) {
 	type args struct {
 		d               *schema.ResourceData
 		serviceEndpoint *serviceendpoint.ServiceEndpoint
@@ -205,11 +205,11 @@ func Test_flattenServiceEndpointBabylonAWSAssumeRole(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := ResourceServiceEndpointBabylonAWSAssumeRole()
+			r := ResourceServiceEndpointBabylonAwsIam()
 
 			resourceData := schema.TestResourceDataRaw(t, r.Schema, nil)
 
-			flattenServiceEndpointBabylonAWSAssumeRole(resourceData, tt.args.serviceEndpoint, tt.args.projectID)
+			flattenServiceEndpointBabylonAwsIam(resourceData, tt.args.serviceEndpoint, tt.args.projectID)
 			state := resourceData.State()
 
 			if diff := deep.Equal(tt.expected, state.Attributes); len(diff) > 0 {

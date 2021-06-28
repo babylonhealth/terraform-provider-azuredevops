@@ -7,8 +7,10 @@ import (
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/tfhelper"
 )
 
-func ResourceServiceEndpointBabylonAWSAssumeRole() *schema.Resource {
-	r := genBaseServiceEndpointResource(flattenServiceEndpointBabylonAWSAssumeRole, expandServiceEndpointBabylonAWSAssumeRole)
+const SERVICE_CONNECTION_TYPE string = "babylon-service-endpoint-aws-iam"
+
+func ResourceServiceEndpointBabylonAwsIam() *schema.Resource {
+	r := genBaseServiceEndpointResource(flattenServiceEndpointBabylonAwsIam, expandServiceEndpointBabylonAwsIam)
 	r.Schema["username"] = &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
@@ -27,7 +29,7 @@ func ResourceServiceEndpointBabylonAWSAssumeRole() *schema.Resource {
 }
 
 // Convert internal Terraform data structure to an AzDO data structure
-func expandServiceEndpointBabylonAWSAssumeRole(d *schema.ResourceData) (*serviceendpoint.ServiceEndpoint, *string, error) {
+func expandServiceEndpointBabylonAwsIam(d *schema.ResourceData) (*serviceendpoint.ServiceEndpoint, *string, error) {
 	serviceEndpoint, projectID := doBaseExpansion(d)
 	serviceEndpoint.Authorization = &serviceendpoint.EndpointAuthorization{
 		Parameters: &map[string]string{
@@ -37,13 +39,13 @@ func expandServiceEndpointBabylonAWSAssumeRole(d *schema.ResourceData) (*service
 		Scheme: converter.String("UsernamePassword"),
 	}
 	serviceEndpoint.Data = &map[string]string{}
-	serviceEndpoint.Type = converter.String("babylon-service-endpoint-aws-iam")
+	serviceEndpoint.Type = converter.String(SERVICE_CONNECTION_TYPE)
 	serviceEndpoint.Url = converter.String("https://s3.amazonaws.com/")
 	return serviceEndpoint, projectID, nil
 }
 
 // Convert AzDO data structure to internal Terraform data structure
-func flattenServiceEndpointBabylonAWSAssumeRole(d *schema.ResourceData, serviceEndpoint *serviceendpoint.ServiceEndpoint, projectID *string) {
+func flattenServiceEndpointBabylonAwsIam(d *schema.ResourceData, serviceEndpoint *serviceendpoint.ServiceEndpoint, projectID *string) {
 	doBaseFlattening(d, serviceEndpoint, projectID)
 	tfhelper.HelpFlattenSecret(d, "password")
 

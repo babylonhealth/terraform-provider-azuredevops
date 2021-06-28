@@ -30,7 +30,7 @@ func TestProvider_HasChildResources(t *testing.T) {
 		"azuredevops_serviceendpoint_bitbucket",
 		"azuredevops_serviceendpoint_kubernetes",
 		"azuredevops_serviceendpoint_aws",
-		"azuredevops_serviceendpoint_babylonawsassumerole",
+		"azuredevops_serviceendpoint_babylonawsiam",
 		"azuredevops_serviceendpoint_genericwebhook",
 		"azuredevops_serviceendpoint_artifactory",
 		"azuredevops_serviceendpoint_sonarqube",
