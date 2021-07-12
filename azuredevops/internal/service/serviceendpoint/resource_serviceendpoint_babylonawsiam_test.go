@@ -33,6 +33,17 @@ func TestResourceServiceEndpointBabylonAwsIam(t *testing.T) {
 					Sensitive:        true,
 					DiffSuppressFunc: tfhelper.DiffFuncSuppressSecretChanged,
 				},
+				"global_role_arn": {
+					Type:        schema.TypeString,
+					Required:    true,
+					Description: "The Amazon Resource Name (ARN) of the role to assume",
+				},
+				"global_sts_session_name": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "azure-pipelines-task",
+					Description: "Session name to be used when assuming the role. The session name should match the one specified in the trust policies of the regional IAM roles.",
+				},
 				"project_id": {
 					Type:         schema.TypeString,
 					Required:     true,
@@ -85,9 +96,10 @@ func TestResourceServiceEndpointBabylonAwsIam(t *testing.T) {
 
 func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 	type args struct {
-		username string
-		password string
-		project  string
+		username     string
+		password     string
+		globaRoleArn string
+		project      string
 	}
 	tests := []struct {
 		name        string
@@ -99,15 +111,18 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 		{
 			name: "test expandServiceEndpoint",
 			args: args{
-				username: "user",
-				password: "password",
-				project:  "project",
+				username:     "user",
+				password:     "password",
+				globaRoleArn: "roleArn",
+				project:      "project",
 			},
 			want: &serviceendpoint.ServiceEndpoint{
 				Authorization: &serviceendpoint.EndpointAuthorization{
 					Parameters: &map[string]string{
-						"username": "user",
-						"password": "password",
+						"username":             "user",
+						"password":             "password",
+						"globalRoleArn":        "roleArn",
+						"globalStsSessionName": "azure-pipelines-task",
 					},
 					Scheme: converter.String("UsernamePassword"),
 				},
@@ -116,7 +131,7 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 				Owner:       converter.String("library"),
 				Type:        converter.String("babylon-service-endpoint-aws-iam"),
 				Name:        converter.String(""),
-				Url:         converter.String("https://s3.amazonaws.com/"),
+				Url:         converter.String("https://aws.amazon.com/"),
 			},
 			wantProject: converter.String("project"),
 		},
@@ -134,6 +149,11 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 			}
 
 			err = resourceData.Set("password", tt.args.password)
+			if err != nil {
+				multiErr = multierror.Append(err, multiErr.Errors...)
+			}
+
+			err = resourceData.Set("global_role_arn", tt.args.globaRoleArn)
 			if err != nil {
 				multiErr = multierror.Append(err, multiErr.Errors...)
 			}
@@ -180,11 +200,13 @@ func Test_flattenServiceEndpointBabylonAwsIam(t *testing.T) {
 				d: &schema.ResourceData{},
 				serviceEndpoint: &serviceendpoint.ServiceEndpoint{
 					Id:  converter.UUID("1ceae7ff-565c-4cdf-9214-6e2246cba764"),
-					Url: converter.String("https://s3.amazonaws.com/"),
+					Url: converter.String("https://aws.amazon.com/"),
 					Authorization: &serviceendpoint.EndpointAuthorization{
 						Parameters: &map[string]string{
-							"username": "user1",
-							"password": "password1",
+							"username":             "user1",
+							"password":             "password1",
+							"globalRoleArn":        "roleArn1",
+							"globalStsSessionName": "sessionName1",
 						},
 						Scheme: converter.String("UsernamePassword"),
 					},
@@ -192,14 +214,16 @@ func Test_flattenServiceEndpointBabylonAwsIam(t *testing.T) {
 				projectID: converter.String("project"),
 			},
 			expected: map[string]string{
-				"id":                    "1ceae7ff-565c-4cdf-9214-6e2246cba764",
-				"authorization.%":       "1",
-				"authorization.scheme":  "UsernamePassword",
-				"description":           "",
-				"password":              "password1",
-				"project_id":            "project",
-				"service_endpoint_name": "",
-				"username":              "user1",
+				"id":                      "1ceae7ff-565c-4cdf-9214-6e2246cba764",
+				"authorization.%":         "1",
+				"authorization.scheme":    "UsernamePassword",
+				"description":             "",
+				"password":                "password1",
+				"global_role_arn":         "roleArn1",
+				"global_sts_session_name": "sessionName1",
+				"project_id":              "project",
+				"service_endpoint_name":   "",
+				"username":                "user1",
 			},
 		},
 	}
