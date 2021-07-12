@@ -49,6 +49,7 @@ func Provider() *schema.Provider {
 			"azuredevops_serviceendpoint_ssh":               serviceendpoint.ResourceServiceEndpointSSH(),
 			"azuredevops_serviceendpoint_npm":               serviceendpoint.ResourceServiceEndpointNpm(),
 			"azuredevops_serviceendpoint_genericwebhook":    serviceendpoint.ResourceServiceEndpointGenericWebhook(),
+			"azuredevops_serviceendpoint_babylonawsiam":     serviceendpoint.ResourceServiceEndpointBabylonAwsIam(),
 			"azuredevops_git_repository":                    git.ResourceGitRepository(),
 			"azuredevops_user_entitlement":                  memberentitlementmanagement.ResourceUserEntitlement(),
 			"azuredevops_group_membership":                  graph.ResourceGroupMembership(),
