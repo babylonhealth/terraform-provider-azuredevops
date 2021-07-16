@@ -1,7 +1,6 @@
 package serviceendpoint
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/go-test/deep"
@@ -10,10 +9,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/serviceendpoint"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/converter"
-	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/tfhelper"
 )
 
-func TestResourceServiceEndpointBabylonAwsIam(t *testing.T) {
+func TestResourceServiceEndpointBabylonVault(t *testing.T) {
 	tests := []struct {
 		name           string
 		expectedSchema map[string]*schema.Schema
@@ -21,28 +19,15 @@ func TestResourceServiceEndpointBabylonAwsIam(t *testing.T) {
 		{
 			name: "test",
 			expectedSchema: map[string]*schema.Schema{
-				"username": {
+				"url": {
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "AWS Access Key ID of the IAM user",
+					Description: "Url for the Vault Server",
 				},
-				"password": {
-					Type:             schema.TypeString,
-					Required:         true,
-					Description:      "AWS Secret Access Key of the IAM user",
-					Sensitive:        true,
-					DiffSuppressFunc: tfhelper.DiffFuncSuppressSecretChanged,
-				},
-				"global_role_arn": {
+				"vault_role": {
 					Type:        schema.TypeString,
 					Required:    true,
-					Description: "The Amazon Resource Name (ARN) of the role to assume",
-				},
-				"global_sts_session_name": {
-					Type:        schema.TypeString,
-					Optional:    true,
-					Default:     "azure-pipelines-task",
-					Description: "Session name to be used when assuming the role. The session name should match the one specified in the trust policies of the regional IAM roles.",
+					Description: "Vault role to log in as",
 				},
 				"project_id": {
 					Type:         schema.TypeString,
@@ -71,35 +56,27 @@ func TestResourceServiceEndpointBabylonAwsIam(t *testing.T) {
 						Type: schema.TypeString,
 					},
 				},
-				"password_hash": {
-					Type:        schema.TypeString,
-					Computed:    true,
-					Default:     nil,
-					Description: fmt.Sprintf("A bcrypted hash of the attribute '%s'", "password"),
-					Sensitive:   true,
-				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			resource := ResourceServiceEndpointBabylonAwsIam()
+			resource := ResourceServiceEndpointBabylonVault()
 			resourceSchema := resource.Schema
 
 			if diff := deep.Equal(resourceSchema, tt.expectedSchema); len(diff) > 0 {
-				t.Errorf("ResourceServiceEndpointBabylonAwsIam() mismatch:\n%s", diff)
+				t.Errorf("ResourceServiceEndpointBabylonVault() mismatch:\n%s", diff)
 			}
 		})
 	}
 }
 
-func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
+func Test_expandServiceEndpointBabylonVault(t *testing.T) {
 	type args struct {
-		username     string
-		password     string
-		globaRoleArn string
-		project      string
+		url       string
+		vaultRole string
+		project   string
 	}
 	tests := []struct {
 		name        string
@@ -111,49 +88,40 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 		{
 			name: "test expandServiceEndpoint",
 			args: args{
-				username:     "user",
-				password:     "password",
-				globaRoleArn: "roleArn",
-				project:      "project",
+				url:       "https://vault.babylonhealth.com",
+				vaultRole: "devtest",
+				project:   "project",
 			},
 			want: &serviceendpoint.ServiceEndpoint{
 				Authorization: &serviceendpoint.EndpointAuthorization{
-					Parameters: &map[string]string{
-						"username":             "user",
-						"password":             "password",
-						"globalRoleArn":        "roleArn",
-						"globalStsSessionName": BABYLON_AWS_IAM_DEFAULT_SESSION_NAME,
-					},
-					Scheme: converter.String("UsernamePassword"),
+					Parameters: &map[string]string{},
+					Scheme:     converter.String("None"),
 				},
-				Data:        &map[string]string{},
+				Data: &map[string]string{
+					"vaultRole": "devtest",
+				},
 				Description: converter.String("Managed by Terraform"),
 				Owner:       converter.String("library"),
-				Type:        converter.String(BABYLON_AWS_IAM_SERVICE_CONNECTION_TYPE),
+				Type:        converter.String(BABYLON_VAULT_SERVICE_CONNECTION_TYPE),
 				Name:        converter.String(""),
-				Url:         converter.String("https://aws.amazon.com/"),
+				Url:         converter.String("https://vault.babylonhealth.com"),
 			},
 			wantProject: converter.String("project"),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := ResourceServiceEndpointBabylonAwsIam()
+			r := ResourceServiceEndpointBabylonVault()
 			resourceData := schema.TestResourceDataRaw(t, r.Schema, nil)
 
 			multiErr := &multierror.Error{}
 
-			err := resourceData.Set("username", tt.args.username)
+			err := resourceData.Set("url", tt.args.url)
 			if err != nil {
 				multiErr = multierror.Append(err, multiErr.Errors...)
 			}
 
-			err = resourceData.Set("password", tt.args.password)
-			if err != nil {
-				multiErr = multierror.Append(err, multiErr.Errors...)
-			}
-
-			err = resourceData.Set("global_role_arn", tt.args.globaRoleArn)
+			err = resourceData.Set("vault_role", tt.args.vaultRole)
 			if err != nil {
 				multiErr = multierror.Append(err, multiErr.Errors...)
 			}
@@ -167,23 +135,23 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 				t.Error(err)
 			}
 
-			got, got1, err := expandServiceEndpointBabylonAwsIam(resourceData)
+			got, got1, err := expandServiceEndpointBabylonVault(resourceData)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("expandServiceEndpointBabylonAwsIam() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ResourceServiceEndpointBabylonVault() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if diff := deep.Equal(got, tt.want); len(diff) > 0 {
-				t.Errorf("expandServiceEndpointBabylonAwsIam() mismatch:\n%s", diff)
+				t.Errorf("ResourceServiceEndpointBabylonVault() mismatch:\n%s", diff)
 			}
 
 			if diff := deep.Equal(got1, tt.wantProject); len(diff) > 0 {
-				t.Errorf("expandServiceEndpointBabylonAwsIam() got1 = %v, want %v", got1, tt.wantProject)
+				t.Errorf("ResourceServiceEndpointBabylonVault() got1 = %v, want %v", got1, tt.wantProject)
 			}
 		})
 	}
 }
 
-func Test_flattenServiceEndpointBabylonAwsIam(t *testing.T) {
+func Test_flattenServiceEndpointBabylonVault(t *testing.T) {
 	type args struct {
 		d               *schema.ResourceData
 		serviceEndpoint *serviceendpoint.ServiceEndpoint
@@ -199,41 +167,35 @@ func Test_flattenServiceEndpointBabylonAwsIam(t *testing.T) {
 			args: args{
 				d: &schema.ResourceData{},
 				serviceEndpoint: &serviceendpoint.ServiceEndpoint{
-					Id:  converter.UUID("1ceae7ff-565c-4cdf-9214-6e2246cba764"),
-					Url: converter.String("https://aws.amazon.com/"),
+					Id:   converter.UUID("1ceae7ff-565c-4cdf-9214-6e2246cba764"),
+					Url:  converter.String("https://vault.babylonhealth.com"),
+					Data: &map[string]string{"vaultRole": "devtest"},
 					Authorization: &serviceendpoint.EndpointAuthorization{
-						Parameters: &map[string]string{
-							"username":             "user1",
-							"password":             "password1",
-							"globalRoleArn":        "roleArn1",
-							"globalStsSessionName": "sessionName1",
-						},
-						Scheme: converter.String("UsernamePassword"),
+						Parameters: &map[string]string{},
+						Scheme:     converter.String("None"),
 					},
 				},
 				projectID: converter.String("project"),
 			},
 			expected: map[string]string{
-				"id":                      "1ceae7ff-565c-4cdf-9214-6e2246cba764",
-				"authorization.%":         "1",
-				"authorization.scheme":    "UsernamePassword",
-				"description":             "",
-				"password":                "password1",
-				"global_role_arn":         "roleArn1",
-				"global_sts_session_name": "sessionName1",
-				"project_id":              "project",
-				"service_endpoint_name":   "",
-				"username":                "user1",
+				"id":                    "1ceae7ff-565c-4cdf-9214-6e2246cba764",
+				"authorization.%":       "1",
+				"authorization.scheme":  "None",
+				"description":           "",
+				"url":                   "https://vault.babylonhealth.com",
+				"vault_role":            "devtest",
+				"project_id":            "project",
+				"service_endpoint_name": "",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := ResourceServiceEndpointBabylonAwsIam()
+			r := ResourceServiceEndpointBabylonVault()
 
 			resourceData := schema.TestResourceDataRaw(t, r.Schema, nil)
 
-			flattenServiceEndpointBabylonAwsIam(resourceData, tt.args.serviceEndpoint, tt.args.projectID)
+			flattenServiceEndpointBabylonVault(resourceData, tt.args.serviceEndpoint, tt.args.projectID)
 			state := resourceData.State()
 
 			if diff := deep.Equal(tt.expected, state.Attributes); len(diff) > 0 {

@@ -7,8 +7,8 @@ import (
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/utils/tfhelper"
 )
 
-const SERVICE_CONNECTION_TYPE string = "babylon-service-endpoint-aws-iam"
-const DEFAULT_SESSION_NAME string = "azure-pipelines-task"
+const BABYLON_AWS_IAM_SERVICE_CONNECTION_TYPE string = "babylon-service-endpoint-aws-iam"
+const BABYLON_AWS_IAM_DEFAULT_SESSION_NAME string = "azure-pipelines-task"
 
 func ResourceServiceEndpointBabylonAwsIam() *schema.Resource {
 	r := genBaseServiceEndpointResource(flattenServiceEndpointBabylonAwsIam, expandServiceEndpointBabylonAwsIam)
@@ -33,7 +33,7 @@ func ResourceServiceEndpointBabylonAwsIam() *schema.Resource {
 		Type:        schema.TypeString,
 		Optional:    true,
 		Description: "Session name to be used when assuming the role. The session name should match the one specified in the trust policies of the regional IAM roles.",
-		Default:     DEFAULT_SESSION_NAME,
+		Default:     BABYLON_AWS_IAM_DEFAULT_SESSION_NAME,
 	}
 	secretHashKey, secretHashSchema := tfhelper.GenerateSecreteMemoSchema("password")
 	r.Schema[secretHashKey] = secretHashSchema
@@ -53,7 +53,7 @@ func expandServiceEndpointBabylonAwsIam(d *schema.ResourceData) (*serviceendpoin
 		Scheme: converter.String("UsernamePassword"),
 	}
 	serviceEndpoint.Data = &map[string]string{}
-	serviceEndpoint.Type = converter.String(SERVICE_CONNECTION_TYPE)
+	serviceEndpoint.Type = converter.String(BABYLON_AWS_IAM_SERVICE_CONNECTION_TYPE)
 	serviceEndpoint.Url = converter.String("https://aws.amazon.com/")
 	return serviceEndpoint, projectID, nil
 }
