@@ -28,4 +28,4 @@ RUN \
 
 WORKDIR /opt/babylon
 
-ENTRYPOINT terragrunt
+ENTRYPOINT ["terragrunt"]
