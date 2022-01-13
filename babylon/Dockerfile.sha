@@ -27,3 +27,5 @@ RUN \
 #   fails with ERROR: Package cache is not enabled.
 
 WORKDIR /opt/babylon
+
+ENTRYPOINT terragrunt
