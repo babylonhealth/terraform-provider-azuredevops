@@ -25,7 +25,12 @@ crash.log
 dist
 
 
-#GoLand Editor configuration
+# GoLand Editor configuration
 .idea
 
+# OS
 .DS_Store
+
+# Babylon build
+terraform-provider-azuredevops
+babylon/terraform.d
