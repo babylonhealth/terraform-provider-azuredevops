@@ -4,13 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	invokerestapimodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/invokerestapi/model"
-	manualapprovalmodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/manualapproval/model"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	invokerestapimodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/invokerestapi/model"
+	manualapprovalmodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/manualapproval/model"
+	"github.com/sirupsen/logrus"
 )
 
 type Client struct {
@@ -41,6 +43,8 @@ func (c *Client) GetInvokeRestAPICheckByID(projectID string, resourceID string, 
 	if err != nil {
 		return invokerestapimodel.CheckConfigurationData{}, found, err
 	}
+	log.Printf("Check: Project: %s -- Resource %s -- Check %d\n", projectID, resourceID, checkID)
+	log.Printf("checkList: %v\n", checkList)
 
 	for _, tempCheck := range checkList {
 		if tempCheck.CheckConfiguration.ID == checkID {
@@ -60,7 +64,8 @@ func (c *Client) GetManualApprovalCheckByID(projectID string, resourceID string,
 	if err != nil {
 		return manualapprovalmodel.ManualApprovalCheckConfig{}, found, err
 	}
-
+	log.Printf("Manual Approval: Project: %s -- Resource %s -- Check %d\n", projectID, resourceID, checkID)
+	log.Printf("checkList: %v\n", checkList)
 	for _, tempCheck := range checkList {
 		if tempCheck.ID == checkID {
 			found = true
@@ -68,7 +73,7 @@ func (c *Client) GetManualApprovalCheckByID(projectID string, resourceID string,
 		}
 	}
 
-	return manualapprovalmodel.ManualApprovalCheckConfig{}, found, fmt.Errorf("no check found with id: %v under resource: %s, in project: %s",
+	return manualapprovalmodel.ManualApprovalCheckConfig{}, found, fmt.Errorf("no manual approval check found with id: %v under resource: %s, in project: %s",
 		checkID, resourceID, projectID)
 }
 
