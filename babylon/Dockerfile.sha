@@ -1,4 +1,4 @@
-FROM hashicorp/terraform:0.13.3
+FROM hashicorp/terraform:0.15.1
 
 COPY babylon/terraform.d /usr/local/share/terraform/
 COPY babylon/.terraformrc /opt/.terraformrc
