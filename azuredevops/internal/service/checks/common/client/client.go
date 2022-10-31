@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	exclusivelockmodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/exclusivelock/model"
 	invokerestapimodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/invokerestapi/model"
 	manualapprovalmodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/manualapproval/model"
 	"github.com/sirupsen/logrus"
@@ -72,6 +73,25 @@ func (c *Client) GetManualApprovalCheckByID(projectID string, resourceID string,
 		checkID, resourceID, projectID)
 }
 
+func (c *Client) GetExclusiveLockCheckByID(projectID string, resourceID string, checkID int64) (exclusivelockmodel.ExclusiveLockCheckConfig, bool, error) {
+	found := false
+
+	checkList, err := c.getExclusiveLockChecks(projectID, resourceID)
+	if err != nil {
+		return exclusivelockmodel.ExclusiveLockCheckConfig{}, found, err
+	}
+
+	for _, tempCheck := range checkList {
+		if tempCheck.ID == checkID {
+			found = true
+			return tempCheck, found, nil
+		}
+	}
+
+	return exclusivelockmodel.ExclusiveLockCheckConfig{}, found, fmt.Errorf("no check found with id: %v under resource: %s, in project: %s",
+		checkID, resourceID, projectID)
+}
+
 func (c *Client) getAllChecks(projectID string, resourceID string) ([]byte, error) {
 	payload := GetChecksPayload{}
 	payload.ContributionIds = []string{"ms.vss-pipelinechecks.checks-data-provider"}
@@ -120,6 +140,27 @@ func (c *Client) getManualApprovalChecks(projectID string, resourceID string) ([
 	}
 
 	configs := []manualapprovalmodel.ManualApprovalCheckConfig{}
+
+	for _, v := range result.DataProviders.MsVssPipelinechecksChecksDataProvider.CheckConfigurationDataList {
+		configs = append(configs, v.CheckConfiguration)
+	}
+
+	return configs, nil
+}
+
+func (c *Client) getExclusiveLockChecks(projectID string, resourceID string) ([]exclusivelockmodel.ExclusiveLockCheckConfig, error) {
+	allChecksBytes, err := c.getAllChecks(projectID, resourceID)
+	if err != nil {
+		return []exclusivelockmodel.ExclusiveLockCheckConfig{}, err
+	}
+
+	result := exclusivelockmodel.HeirarchyResp{}
+	err = json.Unmarshal(allChecksBytes, &result)
+	if err != nil {
+		return []exclusivelockmodel.ExclusiveLockCheckConfig{}, err
+	}
+
+	configs := []exclusivelockmodel.ExclusiveLockCheckConfig{}
 
 	for _, v := range result.DataProviders.MsVssPipelinechecksChecksDataProvider.CheckConfigurationDataList {
 		configs = append(configs, v.CheckConfiguration)
@@ -177,6 +218,31 @@ func (c *Client) AddManualApprovalCheck(projectID string, resourceID string,
 	return checkConf, nil
 }
 
+func (c *Client) AddExclusiveLockCheck(projectID string, resourceID string,
+	check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error) {
+	exclusiveLock := populateExclusiveLockPayload(resourceID, check)
+
+	jsonPayload, err := json.Marshal(exclusiveLock)
+	if err != nil {
+		return exclusivelockmodel.ExclusiveLockCheckConfig{}, err
+	}
+
+	url := fmt.Sprintf("/%s/_apis/pipelines/checks/configurations", projectID)
+	respBytes, err := c.SendRequest("POST", url, string(jsonPayload))
+	if err != nil {
+		return exclusivelockmodel.ExclusiveLockCheckConfig{}, err
+	}
+
+	checkConf := exclusivelockmodel.ExclusiveLockCheckConfig{}
+
+	err = json.Unmarshal(respBytes, &checkConf)
+	if err != nil {
+		return exclusivelockmodel.ExclusiveLockCheckConfig{}, err
+	}
+
+	return checkConf, nil
+}
+
 func (c *Client) UpdateManualApprovalCheck(projectID string, resourceID string, checkID string,
 	check manualapprovalmodel.ManualApprovalValues) (manualapprovalmodel.ManualApprovalCheckConfig, error) {
 	manualApproval := populateManualApprovalPayload(resourceID, check)
@@ -198,6 +264,32 @@ func (c *Client) UpdateManualApprovalCheck(projectID string, resourceID string, 
 	err = json.Unmarshal(respBytes, &checkConf)
 	if err != nil {
 		return manualapprovalmodel.ManualApprovalCheckConfig{}, err
+	}
+
+	return checkConf, nil
+}
+
+func (c *Client) UpdateExclusiveLockCheck(projectID string, resourceID string, checkID string,
+	check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error) {
+	exclusiveLock := populateExclusiveLockPayload(resourceID, check)
+	exclusiveLock.ID = checkID
+
+	jsonPayload, err := json.Marshal(exclusiveLock)
+	if err != nil {
+		return exclusivelockmodel.ExclusiveLockCheckConfig{}, err
+	}
+
+	url := fmt.Sprintf("/%s/_apis/pipelines/checks/configurations/%s", projectID, checkID)
+	respBytes, err := c.SendRequest("PATCH", url, string(jsonPayload))
+	if err != nil {
+		return exclusivelockmodel.ExclusiveLockCheckConfig{}, err
+	}
+
+	checkConf := exclusivelockmodel.ExclusiveLockCheckConfig{}
+
+	err = json.Unmarshal(respBytes, &checkConf)
+	if err != nil {
+		return exclusivelockmodel.ExclusiveLockCheckConfig{}, err
 	}
 
 	return checkConf, nil
@@ -296,6 +388,15 @@ func populateManualApprovalPayload(resourceID string,
 	return approval
 }
 
+func populateExclusiveLockPayload(resourceID string,
+	check exclusivelockmodel.ExclusiveLockValues) exclusivelockmodel.ExclusiveLockCheckPayload {
+	exclusiveLock := exclusivelockmodel.NewExclusiveLockCheckPayload()
+	exclusiveLock.Resource.ID = resourceID
+	exclusiveLock.Timeout = check.Timeout
+
+	return exclusiveLock
+}
+
 func (c *Client) SendRequest(httpMethod string, url string, jsonPayload string) ([]byte, error) {
 	req, err := http.NewRequest(httpMethod,
 		c.baseUrl+url,
@@ -350,6 +451,13 @@ type ManualApprovalClient interface {
 	GetManualApprovalCheckByID(projectID string, resourceID string, checkID int64) (manualapprovalmodel.ManualApprovalCheckConfig, bool, error)
 	AddManualApprovalCheck(projectID string, resourceID string, check manualapprovalmodel.ManualApprovalValues) (manualapprovalmodel.ManualApprovalCheckConfig, error)
 	UpdateManualApprovalCheck(projectID string, resourceID string, checkID string, check manualapprovalmodel.ManualApprovalValues) (manualapprovalmodel.ManualApprovalCheckConfig, error)
+	DeleteCheck(projectID string, checkID string) error
+}
+
+type ExclusiveLockClient interface {
+	GetExclusiveLockCheckByID(projectID string, resourceID string, checkID int64) (exclusivelockmodel.ExclusiveLockCheckConfig, bool, error)
+	AddExclusiveLockCheck(projectID string, resourceID string, check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error)
+	UpdateExclusiveLockCheck(projectID string, resourceID string, checkID string, check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error)
 	DeleteCheck(projectID string, checkID string) error
 }
 

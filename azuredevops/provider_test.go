@@ -51,6 +51,7 @@ func TestProvider_HasChildResources(t *testing.T) {
 		"azuredevops_iteration_permissions",
 		"azuredevops_check_invokerestapi",
 		"azuredevops_check_manualapproval",
+		"azuredevops_check_exclusivelock",
 		"azuredevops_build_permissions",
 		"azuredevops_serviceendpoint_githubapp",
 	}
