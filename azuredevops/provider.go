@@ -5,7 +5,8 @@ import (
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/client"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/build"
-	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/invokerestapi/resource"
+	exclusivelock "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/exclusivelock/resource"
+	invokerestapi "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/invokerestapi/resource"
 	manualapproval "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/manualapproval/resource"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/core"
 	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/git"
@@ -63,8 +64,9 @@ func Provider() *schema.Provider {
 			"azuredevops_area_permissions":                  permissions.ResourceAreaPermissions(),
 			"azuredevops_iteration_permissions":             permissions.ResourceIterationPermissions(),
 			"azuredevops_build_definition_permissions":      permissions.ResourceBuildDefinitionPermissions(),
-			"azuredevops_check_invokerestapi":               resource.ResourceCheckInvokeRestAPI(),
+			"azuredevops_check_invokerestapi":               invokerestapi.ResourceCheckInvokeRestAPI(),
 			"azuredevops_check_manualapproval":              manualapproval.ResourceCheckManualApproval(),
+			"azuredevops_check_exclusivelock":               exclusivelock.ResourceCheckExclusiveLock(),
 			"azuredevops_build_permissions":                 permissions.ResourcePipelinePermissions(),
 			"azuredevops_serviceendpoint_githubapp":         githubapp.ResourceGithubApp(),
 		},

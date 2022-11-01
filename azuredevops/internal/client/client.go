@@ -52,6 +52,7 @@ type AggregatedClient struct {
 	WorkItemTrackingClient        workitemtracking.Client
 	InvokeCheckClient             client.ChecksClient
 	ManualApprovalCheckClient     client.ManualApprovalClient
+	ExclusiveLockCheckClient      client.ExclusiveLockClient
 	GitAppClient                  githubappclient.GithubAppClient
 	Ctx                           context.Context
 }
@@ -159,6 +160,7 @@ func GetAzdoClient(azdoPAT string, organizationURL string, tfVersion string) (*A
 
 	invokeChecksClient := client.NewClient(connection.BaseUrl, connection.AuthorizationString, connection.Timeout)
 	manualApprovalClient := client.NewClient(connection.BaseUrl, connection.AuthorizationString, connection.Timeout)
+	exclusiveLockClient := client.NewClient(connection.BaseUrl, connection.AuthorizationString, connection.Timeout)
 
 	githubAppClient := githubappclient.NewGithubApp(connection.BaseUrl, connection.AuthorizationString, connection.Timeout)
 
@@ -180,6 +182,7 @@ func GetAzdoClient(azdoPAT string, organizationURL string, tfVersion string) (*A
 		WorkItemTrackingClient:        workitemtrackingClient,
 		InvokeCheckClient:             invokeChecksClient,
 		ManualApprovalCheckClient:     manualApprovalClient,
+		ExclusiveLockCheckClient:      exclusiveLockClient,
 		GitAppClient:                  githubAppClient,
 		Ctx:                           ctx,
 	}

@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/go-cmp/cmp"
-	"github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/invokerestapi/model"
+	exclusivelockmodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/exclusivelock/model"
+	invokerestapimodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/invokerestapi/model"
 	manualapprovalmodel "github.com/microsoft/terraform-provider-azuredevops/azuredevops/internal/service/checks/manualapproval/model"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -74,7 +75,7 @@ func TestClient_AddCheck(t *testing.T) {
 	type args struct {
 		projectID  string
 		resourceID string
-		check      model.InvokeRESTAPIValues
+		check      invokerestapimodel.InvokeRESTAPIValues
 	}
 	tests := []struct {
 		name    string
@@ -88,7 +89,7 @@ func TestClient_AddCheck(t *testing.T) {
 			args: args{
 				projectID:  "4f7f5d92-0e11-4311-ac85-9972864acbc2",
 				resourceID: "02c325bc-f8ec-47cd-a466-374b2f8cd835",
-				check: model.InvokeRESTAPIValues{
+				check: invokerestapimodel.InvokeRESTAPIValues{
 					ServiceConnectionId: "02c325bc-f8ec-47cd-a466-374b2f8cd835",
 					LinkedVariableGroup: "",
 					Timeout:             43200,
@@ -144,13 +145,13 @@ func TestClient_UpdateCheck(t *testing.T) {
 		projectID  string
 		resourceID string
 		checkID    string
-		check      model.InvokeRESTAPIValues
+		check      invokerestapimodel.InvokeRESTAPIValues
 	}
 	tests := []struct {
 		name     string
 		fields   fields
 		args     args
-		wantResp model.CheckConfiguration
+		wantResp invokerestapimodel.CheckConfiguration
 		wantErr  bool
 	}{
 		{
@@ -159,7 +160,7 @@ func TestClient_UpdateCheck(t *testing.T) {
 				projectID:  "4f7f5d92-0e11-4311-ac85-9972864acbc2",
 				resourceID: "02c325bc-f8ec-47cd-a466-374b2f8cd835",
 				checkID:    "57",
-				check: model.InvokeRESTAPIValues{
+				check: invokerestapimodel.InvokeRESTAPIValues{
 					ServiceConnectionId: "02c325bc-f8ec-47cd-a466-374b2f8cd835",
 					LinkedVariableGroup: "",
 					Timeout:             43200,
@@ -217,7 +218,7 @@ func TestClient_GetCheckByID(t *testing.T) {
 		name      string
 		fields    fields
 		args      args
-		want      model.CheckConfigurationData
+		want      invokerestapimodel.CheckConfigurationData
 		wantErr   bool
 		wantFound bool
 	}{
@@ -226,8 +227,8 @@ func TestClient_GetCheckByID(t *testing.T) {
 			args: args{
 				checkID: 50,
 			},
-			want: model.CheckConfigurationData{
-				CheckConfiguration: model.CheckConfiguration{
+			want: invokerestapimodel.CheckConfigurationData{
+				CheckConfiguration: invokerestapimodel.CheckConfiguration{
 					ID:  50,
 					URL: "test",
 				},
@@ -237,8 +238,8 @@ func TestClient_GetCheckByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			hr := model.HeirarchyResp{}
-			configData := []model.CheckConfigurationData{tt.want}
+			hr := invokerestapimodel.HeirarchyResp{}
+			configData := []invokerestapimodel.CheckConfigurationData{tt.want}
 			hr.DataProviders.MsVssPipelinechecksChecksDataProvider.CheckConfigurationDataList = configData
 
 			ts := getTestServer(hr)
@@ -501,6 +502,150 @@ func TestClient_UpdateManualApprovalCheck(t *testing.T) {
 	}
 }
 
+func TestClient_AddExclusiveLockCheck(t *testing.T) {
+	type fields struct {
+		baseUrl       string
+		client        *http.Client
+		authorization string
+	}
+	type args struct {
+		projectID  string
+		resourceID string
+		check      exclusivelockmodel.ExclusiveLockValues
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    exclusivelockmodel.ExclusiveLockCheckConfig
+		wantErr bool
+	}{
+		{
+			name: "Add exclusive lock",
+			args: args{
+				projectID:  "project",
+				resourceID: "resource",
+				check: exclusivelockmodel.ExclusiveLockValues{
+					Timeout: 1234,
+				},
+			},
+			want: exclusivelockmodel.ExclusiveLockCheckConfig{
+				Settings:   exclusivelockmodel.Settings{},
+				CreatedBy:  exclusivelockmodel.CreatedBy{},
+				CreatedOn:  "",
+				ModifiedBy: exclusivelockmodel.ModifiedBy{},
+				ModifiedOn: "",
+				Timeout:    1234,
+				Links:      exclusivelockmodel.Links{},
+				ID:         0,
+				Type: exclusivelockmodel.Type{
+					ID:   "2EF31AD6-BAA0-403A-8B45-2CBC9B4E5563",
+					Name: "ExclusiveLock",
+				},
+				URL: "",
+				Resource: exclusivelockmodel.Resource{
+					Type: "endpoint",
+					ID:   "resource",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			personalAccessToken := getAuthString()
+
+			duration := 60 * time.Second
+			ts := getTestServer(populateExclusiveLockPayload(tt.args.resourceID, tt.args.check))
+			defer ts.Close()
+
+			c := NewClient(ts.URL, personalAccessToken, &duration)
+
+			got, err := c.AddExclusiveLockCheck(tt.args.projectID, tt.args.resourceID, tt.args.check)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("AddExclusiveLockCheck() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestClient_UpdateExclusiveLockCheck(t *testing.T) {
+	type fields struct {
+		baseUrl       string
+		client        *http.Client
+		authorization string
+	}
+	type args struct {
+		projectID  string
+		resourceID string
+		check      exclusivelockmodel.ExclusiveLockValues
+		checkID    string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    exclusivelockmodel.ExclusiveLockCheckConfig
+		wantErr bool
+	}{
+		{
+			name: "Update exclusive lock",
+			args: args{
+				projectID:  "project",
+				resourceID: "resource",
+				check: exclusivelockmodel.ExclusiveLockValues{
+					Timeout: 1234,
+				},
+				checkID: "1234",
+			},
+			want: exclusivelockmodel.ExclusiveLockCheckConfig{
+				Settings:   exclusivelockmodel.Settings{},
+				CreatedBy:  exclusivelockmodel.CreatedBy{},
+				CreatedOn:  "",
+				ModifiedBy: exclusivelockmodel.ModifiedBy{},
+				ModifiedOn: "",
+				Timeout:    1234,
+				Links:      exclusivelockmodel.Links{},
+				ID:         1234,
+				Type: exclusivelockmodel.Type{
+					ID:   "2EF31AD6-BAA0-403A-8B45-2CBC9B4E5563",
+					Name: "ExclusiveLock",
+				},
+				URL: "",
+				Resource: exclusivelockmodel.Resource{
+					Type: "endpoint",
+					ID:   "resource",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			personalAccessToken := getAuthString()
+
+			duration := 60 * time.Second
+			ts := getTestServer(tt.want)
+			defer ts.Close()
+
+			c := NewClient(ts.URL, personalAccessToken, &duration)
+
+			got, err := c.UpdateExclusiveLockCheck(tt.args.projectID, tt.args.resourceID, tt.args.checkID, tt.args.check)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("UpdateExclusiveLockCheck() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func getAuthString() string {
 	auth := ":" + os.Getenv("TEST_TOKEN")
 	return "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
@@ -519,8 +664,8 @@ func getTestServer(wantedResponse interface{}) *httptest.Server {
 	return ts
 }
 
-func populateCheckConf(values model.InvokeRESTAPIValues) model.CheckConfiguration {
-	conf := model.CheckConfiguration{}
+func populateCheckConf(values invokerestapimodel.InvokeRESTAPIValues) invokerestapimodel.CheckConfiguration {
+	conf := invokerestapimodel.CheckConfiguration{}
 	conf.Resource.Type = "endpoint"
 	conf.Resource.ID = "02c325bc-f8ec-47cd-a466-374b2f8cd835"
 
