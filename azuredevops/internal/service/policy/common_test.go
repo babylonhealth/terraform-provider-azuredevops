@@ -1,3 +1,4 @@
+//go:build (all || policy) && !exclude_policy
 // +build all policy
 // +build !exclude_policy
 

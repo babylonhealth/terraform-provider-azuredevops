@@ -1,3 +1,4 @@
+//go:build all || utils || workitemtracking
 // +build all utils workitemtracking
 
 package utils

@@ -1,3 +1,4 @@
+//go:build (all || resource_agentpool) && !exclude_resource_agentpool
 // +build all resource_agentpool
 // +build !exclude_resource_agentpool
 
@@ -16,6 +17,7 @@ import (
 )
 
 // Verifies that the following sequence of events occurrs without error:
+//
 //	(1) TF apply creates agent pool
 //	(2) TF state values are set
 //	(3) Agent pool can be queried by ID and has expected name

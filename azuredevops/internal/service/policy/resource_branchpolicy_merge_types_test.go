@@ -1,3 +1,4 @@
+//go:build (all || resource_branchpolicy_merge_types) && !exclude_resource_branchpolicy_merge_types
 // +build all resource_branchpolicy_merge_types
 // +build !exclude_resource_branchpolicy_merge_types
 

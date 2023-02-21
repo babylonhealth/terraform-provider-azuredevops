@@ -1,3 +1,4 @@
+//go:build (all || core || data_sources || data_users) && (!exclude_data_sources || !exclude_data_users)
 // +build all core data_sources data_users
 // +build !exclude_data_sources !exclude_data_users
 

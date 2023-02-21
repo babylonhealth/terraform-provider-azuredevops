@@ -1,3 +1,4 @@
+//go:build (all || core || data_sources || resource_project || data_project) && (!exclude_data_sources || !exclude_data_project)
 // +build all core data_sources resource_project data_project
 // +build !exclude_data_sources !exclude_data_project
 
@@ -13,6 +14,7 @@ import (
 )
 
 // Verifies that the following sequence of events occurrs without error:
+//
 //	(1) TF can create a project
 //	(2) A data source is added to the configuration, and that data source can find the created project
 func TestAccProject_DataSource(t *testing.T) {

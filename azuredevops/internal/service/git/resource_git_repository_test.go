@@ -1,3 +1,4 @@
+//go:build (all || git || resource_git_repository) && (!exclude_git || !exclude_resource_git_repository)
 // +build all git resource_git_repository
 // +build !exclude_git !exclude_resource_git_repository
 
@@ -100,6 +101,7 @@ func configureCleanInitialization(d *schema.ResourceData) {
 }
 
 // verifies that a round-trip flatten/expand sequence will not result in data loss of non-computed properties.
+//
 //	Note: there is no need to expand computed properties, so they won't be tested here.
 func TestGitRepo_FlattenExpand_RoundTrip(t *testing.T) {
 	projectID := uuid.New()

@@ -1,3 +1,4 @@
+//go:build (all || resource_serviceendpoint_azurerm) && !exclude_serviceendpoints
 // +build all resource_serviceendpoint_azurerm
 // +build !exclude_serviceendpoints
 
@@ -231,6 +232,7 @@ func TestServiceEndpointAzureRM_ExpandCredentials(t *testing.T) {
 }
 
 // This is a little different than most. The steps done, along with the motivation behind each, are as follows:
+//
 //	(1) The service endpoint is configured. The `serviceprincipalkey` is set to `""`, which matches
 //		the Azure DevOps API behavior. The service will intentionally hide the value of
 //		`serviceprincipalkey` because it is a secret value
