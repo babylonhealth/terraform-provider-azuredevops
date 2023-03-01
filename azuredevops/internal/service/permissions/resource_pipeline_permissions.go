@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-// resourcePipelinePermissions schema and implementation for project permission resource
+// ResourcePipelinePermissions schema and implementation for project permission resource
 func ResourcePipelinePermissions() *schema.Resource {
 	return &schema.Resource{
 		Create: resourcePipelinePermissionsCreateOrUpdate,

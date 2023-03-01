@@ -1,3 +1,4 @@
+//go:build (all || utils || securitynamespaces) && !exclude_securitynamespaces
 // +build all utils securitynamespaces
 // +build !exclude_securitynamespaces
 

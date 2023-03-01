@@ -155,8 +155,9 @@ func ExpandStringSet(d *schema.Set) []string {
 }
 
 // ImportProjectQualifiedResource Import a resource by an ID that looks like one of the following:
-//		<project ID>/<resource ID>
-//		<project name>/<resource ID>
+//
+//	<project ID>/<resource ID>
+//	<project name>/<resource ID>
 func ImportProjectQualifiedResource() *schema.ResourceImporter {
 	return &schema.ResourceImporter{
 		State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
@@ -177,8 +178,9 @@ func ImportProjectQualifiedResource() *schema.ResourceImporter {
 }
 
 // ImportProjectQualifiedResourceInteger Import a resource by an ID that looks like one of the following:
-//		<project ID>/<resource ID as integer>
-//		<project name>/<resource ID as integer>
+//
+//	<project ID>/<resource ID as integer>
+//	<project name>/<resource ID as integer>
 func ImportProjectQualifiedResourceInteger() *schema.ResourceImporter {
 	return &schema.ResourceImporter{
 		State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
@@ -204,8 +206,9 @@ func ImportProjectQualifiedResourceInteger() *schema.ResourceImporter {
 }
 
 // ImportProjectQualifiedResourceUUID Import a resource by an ID that looks like one of the following:
-//		<project ID>/<resource ID as uuid>
-//		<project name>/<resource ID as uuid>
+//
+//	<project ID>/<resource ID as uuid>
+//	<project name>/<resource ID as uuid>
 func ImportProjectQualifiedResourceUUID() *schema.ResourceImporter {
 	return &schema.ResourceImporter{
 		State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
@@ -225,7 +228,7 @@ func ImportProjectQualifiedResourceUUID() *schema.ResourceImporter {
 	}
 }
 
-//Get real project ID
+// Get real project ID
 func GetRealProjectId(projectNameOrID string, meta interface{}) (string, error) {
 	//If request params is project name, try get the project ID
 	if _, err := uuid.ParseUUID(projectNameOrID); err != nil {
