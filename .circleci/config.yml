@@ -12,7 +12,7 @@ quay_login: &quay_login
   run: docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}" quay.io
 
 install_base: &install_base
-  run: apk add git bash curl gcc build-base g++ libc-dev
+  run: apk add git bash curl gcc build-base g++ libc-dev openssh-client
 
 install_docker: &install_docker
   run: apk add docker
