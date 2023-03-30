@@ -15,14 +15,14 @@ import (
 func Provider() *schema.Provider {
 	p := &schema.Provider{
 		ResourcesMap: map[string]*schema.Resource{
-			"azuredevops_build_permissions":              permissions.ResourcePipelinePermissions(),
-			"azuredevops_check_invokerestapi":            invokerestapi.ResourceCheckInvokeRestAPI(),
-			"azuredevops_check_manualapproval":           manualapproval.ResourceCheckManualApproval(),
-			"azuredevops_check_exclusivelock":            exclusivelock.ResourceCheckExclusiveLock(),
-			"azuredevops_serviceendpoint_genericwebhook": serviceendpoint.ResourceServiceEndpointGenericWebhook(),
-			"azuredevops_serviceendpoint_babylonawsiam":  serviceendpoint.ResourceServiceEndpointBabylonAwsIam(),
-			"azuredevops_serviceendpoint_babylonvault":   serviceendpoint.ResourceServiceEndpointBabylonVault(),
-			"azuredevops_serviceendpoint_githubapp":      githubapp.ResourceGithubApp(),
+			"bblnazuredevops_build_permissions":              permissions.ResourcePipelinePermissions(),
+			"bblnazuredevops_check_invokerestapi":            invokerestapi.ResourceCheckInvokeRestAPI(),
+			"bblnazuredevops_check_manualapproval":           manualapproval.ResourceCheckManualApproval(),
+			"bblnazuredevops_check_exclusivelock":            exclusivelock.ResourceCheckExclusiveLock(),
+			"bblnazuredevops_serviceendpoint_genericwebhook": serviceendpoint.ResourceServiceEndpointGenericWebhook(),
+			"bblnazuredevops_serviceendpoint_babylonawsiam":  serviceendpoint.ResourceServiceEndpointBabylonAwsIam(),
+			"bblnazuredevops_serviceendpoint_babylonvault":   serviceendpoint.ResourceServiceEndpointBabylonVault(),
+			"bblnazuredevops_serviceendpoint_githubapp":      githubapp.ResourceGithubApp(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{},
 		Schema: map[string]*schema.Schema{
