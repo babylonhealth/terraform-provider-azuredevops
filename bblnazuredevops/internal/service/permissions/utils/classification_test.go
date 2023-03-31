@@ -9,12 +9,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/azdosdkmocks"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/workitemtracking"
-	"github.com/microsoft/terraform-provider-azuredevops/azdosdkmocks"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/client"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/converter"
 	"github.com/stretchr/testify/assert"
 )
 

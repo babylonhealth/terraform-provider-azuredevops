@@ -2,9 +2,9 @@ package githubapp
 
 import (
 	"fmt"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/tfhelper"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/client"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/tfhelper"
 )
 
 func ResourceGithubApp() *schema.Resource {

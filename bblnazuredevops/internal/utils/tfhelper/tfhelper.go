@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/secretmemo"
 	"github.com/hashicorp/go-uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/core"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/client"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/converter"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/secretmemo"
 )
 
 func calcSecretHashKey(secretKey string) string {

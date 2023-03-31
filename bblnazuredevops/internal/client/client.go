@@ -3,12 +3,13 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/checks/common/client"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/githubapp/githubappclient"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/common/client"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/githubapp/githubappclient"
 	"log"
 	"os"
 	"strings"
 
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/version"
 	"github.com/microsoft/azure-devops-go-api/azuredevops"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/build"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/core"
@@ -24,7 +25,6 @@ import (
 	"github.com/microsoft/azure-devops-go-api/azuredevops/serviceendpoint"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/taskagent"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/workitemtracking"
-	"github.com/microsoft/terraform-provider-azuredevops/version"
 )
 
 // AggregatedClient aggregates all of the underlying clients into a single data

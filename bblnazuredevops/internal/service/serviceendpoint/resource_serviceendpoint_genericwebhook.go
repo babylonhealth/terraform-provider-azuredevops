@@ -1,10 +1,10 @@
 package serviceendpoint
 
 import (
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/tfhelper"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/serviceendpoint"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/converter"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/tfhelper"
 )
 
 // ResourceServiceEndpointGenericWebhook schema and implementation for docker registry service endpoint resource

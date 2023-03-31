@@ -6,15 +6,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/tfhelper"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/serviceendpoint"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/client"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/converter"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/tfhelper"
 )
 
 const errMsgTfConfigRead = "Error reading terraform configuration: %+v"

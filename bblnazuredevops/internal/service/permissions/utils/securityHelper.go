@@ -3,8 +3,8 @@ package utils
 import (
 	"fmt"
 
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/converter"
 )
 
 // SetPrincipalPermissions sets permissions for a specific security namespac

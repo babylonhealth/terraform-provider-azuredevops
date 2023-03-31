@@ -1,14 +1,14 @@
 package bblnazuredevops
 
 import (
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
+	exclusivelock "github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/exclusivelock/resource"
+	invokerestapi "github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/invokerestapi/resource"
+	manualapproval "github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/manualapproval/resource"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/githubapp"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/permissions"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/serviceendpoint"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/client"
-	exclusivelock "github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/checks/exclusivelock/resource"
-	invokerestapi "github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/checks/invokerestapi/resource"
-	manualapproval "github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/checks/manualapproval/resource"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/githubapp"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/permissions"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/serviceendpoint"
 )
 
 // Provider - The top level Azure DevOps Provider definition.

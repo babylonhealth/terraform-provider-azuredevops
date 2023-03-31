@@ -7,12 +7,12 @@ import (
 	"strings"
 
 	"github.com/ahmetb/go-linq"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/identity"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/security"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/client"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/utils/converter"
 )
 
 // ActionName type for an permission actions

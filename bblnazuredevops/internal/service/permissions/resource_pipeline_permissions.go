@@ -2,10 +2,10 @@ package permissions
 
 import (
 	"fmt"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
+	securityhelper "github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/permissions/utils"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/client"
-	securityhelper "github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/permissions/utils"
 	"log"
 )
 

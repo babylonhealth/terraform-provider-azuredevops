@@ -2,7 +2,7 @@ package model
 
 import (
 	"encoding/json"
-	"github.com/microsoft/terraform-provider-azuredevops/bblnazuredevops/internal/service/checks/common/model"
+	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/common/model"
 	"github.com/sirupsen/logrus"
 )
 
