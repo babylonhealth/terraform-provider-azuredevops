@@ -3,12 +3,12 @@
 set -exo pipefail
 
 CONTAINER_NAME=quay.io/babylonhealth/azure-terraform
-BINARY_NAME=terraform-provider-azuredevops
+BINARY_NAME=terraform-provider-bblnazuredevops
 
 SHA_VERSION=${CIRCLE_SHA1:-latest}
 SEMVER_VERSION="$(git describe --abbrev=0 --tags --match '*-babylon*' | sed -E -e 's/^v//' || echo unknown)"
 
-PROVIDER_NAME=azuredevops
+PROVIDER_NAME=bblnazuredevops
 PLUGIN_DIR="babylon/terraform.d/plugins/babylonhealth.com/babylonhealth/${PROVIDER_NAME}/${SEMVER_VERSION}/linux_amd64"
 
 

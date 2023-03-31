@@ -1,7 +1,11 @@
 terraform {
   required_providers {
     azuredevops = {
-      source  = "babylonhealth.com/babylonhealth/azuredevops"
+      source  = "microsoft/azuredevops"
+      version = "= 0.4.0"
+    }
+    bblnazuredevops = {
+      source  = "babylonhealth.com/babylonhealth/bblnazuredevops"
       version = "~> 0.0.4"
     }
   }
