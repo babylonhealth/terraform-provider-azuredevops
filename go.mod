@@ -1,4 +1,4 @@
-module github.com/microsoft/terraform-provider-azuredevops
+module github.com/babylonhealth/terraform-provider-bblnazuredevops
 
 go 1.16
 

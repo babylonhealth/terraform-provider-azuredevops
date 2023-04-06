@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 ARG TERRAFORM_VERSION=0.12.28
 ARG TFLINT_VERSION=0.15.3
-ARG TERRAFORM_PROVIDER_AZUREDEVOPS_NAME=terraform-provider-azuredevops
+ARG TERRAFORM_PROVIDER_AZUREDEVOPS_NAME=terraform-provider-bblnazuredevops
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends apt-utils 2>&1 \
@@ -25,7 +25,7 @@ RUN apt-get update \
     && curl -sSL -o /tmp/docker-downloads/tflint.zip https://github.com/wata727/tflint/releases/download/v${TFLINT_VERSION}/tflint_linux_amd64.zip \
     && unzip /tmp/docker-downloads/tflint.zip \
     && mv tflint /usr/local/bin \
-    && cd ~ \ 
+    && cd ~ \
     && rm -rf /tmp/docker-downloads \
     # Install goreleaser
     && (cd /usr/local && curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh -s -- "v0.132.1") \

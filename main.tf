@@ -3,6 +3,11 @@ locals {
 }
 
 provider "azuredevops" {
+  version = "= 0.4.0"
+  org_service_url = "https://dev.azure.com/${local.azure_org}/"
+}
+
+provider "bblnazuredevops" {
   version = "= 0.0.4"
   org_service_url = "https://dev.azure.com/${local.azure_org}/"
 }
@@ -17,13 +22,13 @@ resource "azuredevops_serviceendpoint_github" "gh" {
 
 }
 
-resource "azuredevops_serviceendpoint_githubapp" "app" {
+resource "bblnazuredevops_serviceendpoint_githubapp" "app" {
   project_id = azuredevops_project.project.id
   connection_id = azuredevops_serviceendpoint_github.gh.id
   repo = "babylonhealth/pipeline-historian"
 }
 
-resource "azuredevops_build_permissions" "admin_permission3" {
+resource "bblnazuredevops_build_permissions" "admin_permission3" {
     project_id      = "4f7f5d92-0e11-4311-ac85-9972864acbc2"
     principal = "vssgp.Uy0xLTktMTU1MTM3NDI0NS0yNDU1NjAwOTc1LTI4NjEzNDU5NS0yODk0NDM2NzIyLTIyNTMwNDg3NzAtMS0zNzc2MDEyNDM3LTI1MjAyNTQ3OTAtMjYxOTIwMDAzOS0yNTg5OTY1NzE4"
     project_level = true
@@ -47,7 +52,7 @@ resource "azuredevops_build_permissions" "admin_permission3" {
     }
 }
 
-resource "azuredevops_build_permissions" "admin_permission4" {
+resource "bblnazuredevops_build_permissions" "admin_permission4" {
     project_id      = "4f7f5d92-0e11-4311-ac85-9972864acbc2"
     principal = "vssgp.Uy0xLTktMTU1MTM3NDI0NS0yNDU1NjAwOTc1LTI4NjEzNDU5NS0yODk0NDM2NzIyLTIyNTMwNDg3NzAtMS0zNzc2MDEyNDM3LTI1MjAyNTQ3OTAtMjYxOTIwMDAzOS0yNTg5OTY1NzE4"
     project_level = false

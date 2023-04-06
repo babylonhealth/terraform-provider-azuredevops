@@ -31,6 +31,6 @@ dist
 # OS
 .DS_Store
 
-# Babylon build
-terraform-provider-azuredevops
+# Build
+terraform-provider-bblnazuredevops
 babylon/terraform.d
