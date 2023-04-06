@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -exo pipefail
+set -euxo pipefail
 
 CONTAINER_NAME=quay.io/babylonhealth/azure-terraform
 BINARY_NAME=terraform-provider-bblnazuredevops
@@ -10,6 +10,10 @@ SEMVER_VERSION="$(git describe --abbrev=0 --tags --match '*-babylon*' | sed -E -
 
 PROVIDER_NAME=bblnazuredevops
 PLUGIN_DIR="babylon/terraform.d/plugins/babylonhealth.com/babylonhealth/${PROVIDER_NAME}/${SEMVER_VERSION}/linux_amd64"
+
+REPO_OWNER=babylonhealth
+REPO_NAME=terraform-provider-azuredevops
+LEGACY_PROVIDER_TAGS=( v0.1.4-babylon.3 v0.1.4-babylon.5 )
 
 
 run_compile() {
@@ -21,6 +25,34 @@ run_compile() {
 
 run_test() {
     go test -coverprofile=c.out -v ./...
+}
+
+# FIXME: remove this once projects have migrated from the forked provider to the
+#        supplementary one.
+run_fetch_legacy_providers() {
+    if [[ -z "${GITHUB_TOKEN+x}" ]]; then
+        echo -e "\tEnvironment variable GITHUB_TOKEN is missing; unable to fetch legacy provider release.\n"
+        exit 1
+    fi
+    local auth_header="Authorization: token $GITHUB_TOKEN"
+
+    for tag in "${LEGACY_PROVIDER_TAGS[@]}"; do
+        local asset_id="$(curl -s \
+            -H "Accept: application/vnd.github+json" \
+            -H "$auth_header" \
+            https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/tags/$tag | jq -r '.assets[0].id')"
+        if [[ "$asset_id" == "null" ]]; then
+            echo -e "\tUnable to find asset for tag $tag; did you forget to upload it?\n"
+            exit 1
+        fi
+        # Drop the leading v from the tag name
+        local dest="babylon/terraform.d/plugins/babylonhealth.com/babylonhealth/azuredevops/${tag:1}/linux_amd64"
+        mkdir -p $dest
+        curl -Ls -o "$dest/terraform-provider-azuredevops" \
+            -H "Accept: application/octet-stream" \
+            -H "$auth_header" \
+            https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/assets/$asset_id
+    done
 }
 
 run_docker_compile() {
@@ -68,10 +100,12 @@ main() {
             run_test
             ;;
         build)
+            run_fetch_legacy_providers
             run_compile
             run_build
             ;;
         docker-build)
+            run_fetch_legacy_providers
             run_docker_compile
             run_build
             ;;
