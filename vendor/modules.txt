@@ -93,6 +93,7 @@ github.com/hashicorp/errwrap
 # github.com/hashicorp/go-cleanhttp v0.5.1
 github.com/hashicorp/go-cleanhttp
 # github.com/hashicorp/go-getter v1.4.2-0.20200106182914-9813cbd4eb02
+## explicit
 github.com/hashicorp/go-getter
 github.com/hashicorp/go-getter/helper/url
 # github.com/hashicorp/go-hclog v0.9.2
@@ -123,6 +124,7 @@ github.com/hashicorp/hcl/json/parser
 github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/hashicorp/hcl/v2 v2.3.0
+## explicit
 github.com/hashicorp/hcl/v2
 github.com/hashicorp/hcl/v2/ext/customdecode
 github.com/hashicorp/hcl/v2/ext/dynblock
@@ -136,9 +138,8 @@ github.com/hashicorp/hcl/v2/hclwrite
 github.com/hashicorp/hcl/v2/json
 # github.com/hashicorp/logutils v1.0.0
 github.com/hashicorp/logutils
-# github.com/hashicorp/terraform v0.12.23
-## explicit
 # github.com/hashicorp/terraform-config-inspect v0.0.0-20191212124732-c6ae6269b9d7
+## explicit
 github.com/hashicorp/terraform-config-inspect/tfconfig
 # github.com/hashicorp/terraform-json v0.4.0
 github.com/hashicorp/terraform-json
@@ -207,31 +208,40 @@ github.com/mattn/go-isatty
 # github.com/microsoft/azure-devops-go-api/azuredevops v1.0.0-b3
 ## explicit
 github.com/microsoft/azure-devops-go-api/azuredevops
-github.com/microsoft/azure-devops-go-api/azuredevops/accounts
-github.com/microsoft/azure-devops-go-api/azuredevops/build
-github.com/microsoft/azure-devops-go-api/azuredevops/commerce
-github.com/microsoft/azure-devops-go-api/azuredevops/core
 github.com/microsoft/azure-devops-go-api/azuredevops/delegatedauthorization
-github.com/microsoft/azure-devops-go-api/azuredevops/distributedtaskcommon
-github.com/microsoft/azure-devops-go-api/azuredevops/featuremanagement
-github.com/microsoft/azure-devops-go-api/azuredevops/forminput
-github.com/microsoft/azure-devops-go-api/azuredevops/git
-github.com/microsoft/azure-devops-go-api/azuredevops/graph
 github.com/microsoft/azure-devops-go-api/azuredevops/identity
-github.com/microsoft/azure-devops-go-api/azuredevops/licensing
-github.com/microsoft/azure-devops-go-api/azuredevops/licensingrule
-github.com/microsoft/azure-devops-go-api/azuredevops/memberentitlementmanagement
-github.com/microsoft/azure-devops-go-api/azuredevops/operations
-github.com/microsoft/azure-devops-go-api/azuredevops/policy
-github.com/microsoft/azure-devops-go-api/azuredevops/profile
-github.com/microsoft/azure-devops-go-api/azuredevops/release
 github.com/microsoft/azure-devops-go-api/azuredevops/security
-github.com/microsoft/azure-devops-go-api/azuredevops/serviceendpoint
 github.com/microsoft/azure-devops-go-api/azuredevops/system
-github.com/microsoft/azure-devops-go-api/azuredevops/taskagent
-github.com/microsoft/azure-devops-go-api/azuredevops/test
 github.com/microsoft/azure-devops-go-api/azuredevops/webapi
 github.com/microsoft/azure-devops-go-api/azuredevops/workitemtracking
+# github.com/microsoft/azure-devops-go-api/azuredevops/v6 v6.0.1
+## explicit
+github.com/microsoft/azure-devops-go-api/azuredevops/v6
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/accounts
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/build
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/commerce
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/core
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/delegatedauthorization
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/distributedtaskcommon
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/featuremanagement
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/forminput
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/git
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/graph
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/identity
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/licensing
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/licensingrule
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/memberentitlementmanagement
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/operations
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/policy
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/profile
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/release
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/security
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/serviceendpoint
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/system
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/taskagent
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/test
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/webapi
+github.com/microsoft/azure-devops-go-api/azuredevops/v6/workitemtracking
 # github.com/mitchellh/cli v1.0.0
 github.com/mitchellh/cli
 # github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db

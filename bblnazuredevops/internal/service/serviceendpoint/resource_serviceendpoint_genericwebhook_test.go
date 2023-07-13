@@ -5,10 +5,11 @@ import (
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/tfhelper"
 	"github.com/go-test/deep"
+	"github.com/google/uuid"
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"github.com/microsoft/azure-devops-go-api/azuredevops/serviceendpoint"
+	"github.com/microsoft/azure-devops-go-api/azuredevops/v6/serviceendpoint"
 	"golang.org/x/crypto/bcrypt"
 	"os"
 	"testing"
@@ -103,7 +104,7 @@ func Test_expandServiceEndpointGenericWebhook(t *testing.T) {
 		name        string
 		args        args
 		want        *serviceendpoint.ServiceEndpoint
-		wantProject *string
+		wantProject *uuid.UUID
 		wantErr     bool
 	}{
 		{
@@ -112,7 +113,7 @@ func Test_expandServiceEndpointGenericWebhook(t *testing.T) {
 				username: "user",
 				password: "password",
 				url:      "http://http.cat",
-				project:  "project",
+				project:  "3c49c3b6-a06d-424d-a6b6-0cd375ee9261",
 			},
 			want: &serviceendpoint.ServiceEndpoint{
 				Authorization: &serviceendpoint.EndpointAuthorization{
@@ -129,7 +130,7 @@ func Test_expandServiceEndpointGenericWebhook(t *testing.T) {
 				Url:         converter.String("http://http.cat"),
 				Name:        converter.String(""),
 			},
-			wantProject: converter.String("project"),
+			wantProject: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
 		},
 	}
 	for _, tt := range tests {
@@ -183,7 +184,7 @@ func Test_flattenServiceEndpointGenericWebhook(t *testing.T) {
 	type args struct {
 		d               *schema.ResourceData
 		serviceEndpoint *serviceendpoint.ServiceEndpoint
-		projectID       *string
+		projectID       *uuid.UUID
 	}
 	tests := []struct {
 		name     string
@@ -205,7 +206,7 @@ func Test_flattenServiceEndpointGenericWebhook(t *testing.T) {
 						Scheme: converter.String("UsernamePassword"),
 					},
 				},
-				projectID: converter.String("project"),
+				projectID: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
 			},
 			expected: map[string]string{
 				"id":                    "1ceae7ff-565c-4cdf-9214-6e2246cba764",
@@ -213,7 +214,7 @@ func Test_flattenServiceEndpointGenericWebhook(t *testing.T) {
 				"authorization.scheme":  "UsernamePassword",
 				"description":           "",
 				"password":              "password1",
-				"project_id":            "project",
+				"project_id":            "3c49c3b6-a06d-424d-a6b6-0cd375ee9261",
 				"service_endpoint_name": "",
 				"url":                   "http://http.cat",
 				"username":              "user1",

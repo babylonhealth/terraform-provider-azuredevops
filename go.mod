@@ -10,13 +10,16 @@ require (
 	github.com/golang/mock v1.4.1
 	github.com/google/go-cmp v0.5.2
 	github.com/google/uuid v1.1.1
+	github.com/hashicorp/go-getter v1.4.2-0.20200106182914-9813cbd4eb02 // indirect
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/hashicorp/go-uuid v1.0.1
-	github.com/hashicorp/terraform v0.12.23
+	github.com/hashicorp/hcl/v2 v2.3.0 // indirect
+	github.com/hashicorp/terraform-config-inspect v0.0.0-20191212124732-c6ae6269b9d7 // indirect
 	github.com/hashicorp/terraform-plugin-sdk v1.13.1
 	github.com/microsoft/azure-devops-go-api/azuredevops v1.0.0-b3
+	github.com/microsoft/azure-devops-go-api/azuredevops/v6 v6.0.1
 	github.com/sirupsen/logrus v1.2.0
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc
-	gopkg.in/yaml.v2 v2.2.4
+	gopkg.in/yaml.v2 v2.2.4 // indirect
 )
