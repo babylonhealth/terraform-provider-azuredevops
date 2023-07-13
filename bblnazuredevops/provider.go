@@ -1,6 +1,7 @@
 package bblnazuredevops
 
 import (
+	"context"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
 	exclusivelock "github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/exclusivelock/resource"
 	invokerestapi "github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/invokerestapi/resource"
@@ -8,6 +9,7 @@ import (
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/githubapp"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/permissions"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/serviceendpoint"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -42,20 +44,24 @@ func Provider() *schema.Provider {
 		},
 	}
 
-	p.ConfigureFunc = providerConfigure(p)
+	p.ConfigureContextFunc = providerConfigure(p)
 
 	return p
 }
 
-func providerConfigure(p *schema.Provider) schema.ConfigureFunc {
-	return func(d *schema.ResourceData) (interface{}, error) {
+func providerConfigure(p *schema.Provider) schema.ConfigureContextFunc {
+	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 		terraformVersion := p.TerraformVersion
 		if terraformVersion == "" {
 			// Terraform 0.12 introduced this field to the protocol
 			// We can therefore assume that if it's missing it's 0.10 or 0.11
 			terraformVersion = "0.11+compatible"
 		}
+		azdoPAT := d.Get("personal_access_token").(string)
+		organizationURL := d.Get("org_service_url").(string)
 
-		return client.GetAzdoClient(d.Get("personal_access_token").(string), d.Get("org_service_url").(string), terraformVersion)
+		azdoClient, err := client.GetAzdoClient(azdoPAT, organizationURL, terraformVersion)
+
+		return azdoClient, diag.FromErr(err)
 	}
 }
