@@ -50,7 +50,7 @@ func (c *Client) GetInvokeRestAPICheckByID(projectID string, resourceID string, 
 		}
 	}
 
-	return invokerestapimodel.CheckConfigurationData{}, found, fmt.Errorf("no check found with id: %v under resource: %s, in project: %s",
+	return invokerestapimodel.CheckConfigurationData{}, found, fmt.Errorf("no invokerestapi check found with id: %v under resource: %s, in project: %s",
 		checkID, resourceID, projectID)
 }
 
@@ -69,7 +69,7 @@ func (c *Client) GetManualApprovalCheckByID(projectID string, resourceID string,
 		}
 	}
 
-	return manualapprovalmodel.ManualApprovalCheckConfig{}, found, fmt.Errorf("no check found with id: %v under resource: %s, in project: %s",
+	return manualapprovalmodel.ManualApprovalCheckConfig{}, found, fmt.Errorf("no manualapproval check found with id: %v under resource: %s, in project: %s",
 		checkID, resourceID, projectID)
 }
 
@@ -88,7 +88,7 @@ func (c *Client) GetExclusiveLockCheckByID(projectID string, resourceID string, 
 		}
 	}
 
-	return exclusivelockmodel.ExclusiveLockCheckConfig{}, found, fmt.Errorf("no check found with id: %v under resource: %s, in project: %s",
+	return exclusivelockmodel.ExclusiveLockCheckConfig{}, found, fmt.Errorf("no exclusivelock check found with id: %v under resource: %s, in project: %s",
 		checkID, resourceID, projectID)
 }
 
