@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
 	securityhelper "github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/permissions/utils"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"log"
 )
 

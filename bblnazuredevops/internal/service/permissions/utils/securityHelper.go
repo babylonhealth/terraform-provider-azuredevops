@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // SetPrincipalPermissions sets permissions for a specific security namespac

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/invokerestapi/model"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"strconv"
 )
 

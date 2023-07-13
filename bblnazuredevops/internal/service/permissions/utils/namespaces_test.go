@@ -18,7 +18,7 @@ import (
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/testhelper"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/v6/identity"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/v6/security"
 	"github.com/stretchr/testify/assert"

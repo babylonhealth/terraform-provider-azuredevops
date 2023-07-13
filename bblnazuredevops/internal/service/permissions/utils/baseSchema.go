@@ -2,8 +2,8 @@ package utils
 
 import (
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/suppress"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 // CreatePermissionResourceSchema creates a resources schema for a Terraform permission resource
