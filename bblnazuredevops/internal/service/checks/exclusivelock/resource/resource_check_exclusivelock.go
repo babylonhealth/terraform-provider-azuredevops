@@ -1,11 +1,13 @@
 package resource
 
 import (
+	"context"
 	"fmt"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/common/resource"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/exclusivelock/model"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/tfhelper"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"strconv"
 )
@@ -13,11 +15,10 @@ import (
 // ResourceServiceEndpointDockerRegistry schema and implementation for docker registry service endpoint resource
 func ResourceCheckExclusiveLock() *schema.Resource {
 	r := &schema.Resource{
-		Create: createCheck,
-		Read:   readCheck,
-		Update: updateCheck,
-		Delete: resource.DeleteCheck,
-		Exists: resource.ExistsCheck,
+		CreateContext: createCheck,
+		ReadContext:   readCheck,
+		UpdateContext: updateCheck,
+		DeleteContext: resource.DeleteCheckContext,
 	}
 	r.Schema = map[string]*schema.Schema{}
 	r.Schema["project_id"] = &schema.Schema{
@@ -51,7 +52,7 @@ func ResourceCheckExclusiveLock() *schema.Resource {
 }
 
 // See Resource documentation.
-func createCheck(d *schema.ResourceData, m interface{}) error {
+func createCheck(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	clients := m.(*client.AggregatedClient)
 
 	projectID := d.Get("project_id").(string)
@@ -61,7 +62,7 @@ func createCheck(d *schema.ResourceData, m interface{}) error {
 
 	resp, err := clients.ExclusiveLockCheckClient.AddExclusiveLockCheck(projectID, resourceID, check)
 	if err != nil {
-		return fmt.Errorf("error creating check in Azure DevOps: %+v", err)
+		return diag.FromErr(err)
 	}
 
 	id := resp.ID
@@ -72,7 +73,7 @@ func createCheck(d *schema.ResourceData, m interface{}) error {
 }
 
 // See Resource documentation.
-func readCheck(d *schema.ResourceData, m interface{}) error {
+func readCheck(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	clients := m.(*client.AggregatedClient)
 
 	projectID := d.Get("project_id").(string)
@@ -82,12 +83,12 @@ func readCheck(d *schema.ResourceData, m interface{}) error {
 
 	idInt, err := strconv.ParseInt(checkId, 10, 0)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	checkConfig, found, err := clients.ExclusiveLockCheckClient.GetExclusiveLockCheckByID(projectID, resourceID, idInt)
 	if err != nil {
-		return fmt.Errorf("error reading check in Azure DevOps: %+v", err)
+		return diag.FromErr(err)
 	}
 
 	if !found {
@@ -97,12 +98,11 @@ func readCheck(d *schema.ResourceData, m interface{}) error {
 
 	d.Set("timeout", checkConfig.Timeout)
 
-	return err
-
+	return diag.FromErr(err)
 }
 
 // See Resource documentation.
-func updateCheck(d *schema.ResourceData, m interface{}) error {
+func updateCheck(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	clients := m.(*client.AggregatedClient)
 
 	projectID := d.Get("project_id").(string)
@@ -112,7 +112,7 @@ func updateCheck(d *schema.ResourceData, m interface{}) error {
 
 	_, err := clients.ExclusiveLockCheckClient.UpdateExclusiveLockCheck(projectID, resourceID, d.Id(), check)
 	if err != nil {
-		return fmt.Errorf("error updating check in Azure DevOps: %+v", err)
+		return diag.FromErr(err)
 	}
 
 	//update ?
