@@ -91,7 +91,7 @@ func createCheck(ctx context.Context, d *schema.ResourceData, m interface{}) dia
 
 	check := buildManualApprovalValuesFromSchema(d)
 
-	resp, err := clients.ManualApprovalCheckClient.AddManualApprovalCheck(projectID, resourceID, check)
+	resp, err := clients.ManualApprovalCheckClient.AddManualApprovalCheck(ctx, projectID, resourceID, check)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -117,7 +117,7 @@ func readCheck(ctx context.Context, d *schema.ResourceData, m interface{}) diag.
 		return diag.FromErr(err)
 	}
 
-	checkConfig, found, err := clients.ManualApprovalCheckClient.GetManualApprovalCheckByID(projectID, resourceID, idInt)
+	checkConfig, found, err := clients.ManualApprovalCheckClient.GetManualApprovalCheckByID(ctx, projectID, resourceID, idInt)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -160,7 +160,7 @@ func updateCheck(ctx context.Context, d *schema.ResourceData, m interface{}) dia
 
 	check := buildManualApprovalValuesFromSchema(d)
 
-	_, err := clients.ManualApprovalCheckClient.UpdateManualApprovalCheck(projectID, resourceID, d.Id(), check)
+	_, err := clients.ManualApprovalCheckClient.UpdateManualApprovalCheck(ctx, projectID, resourceID, d.Id(), check)
 	if err != nil {
 		return diag.FromErr(err)
 	}

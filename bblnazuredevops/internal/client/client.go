@@ -50,7 +50,7 @@ type AggregatedClient struct {
 	SecurityClient                security.Client
 	IdentityClient                identity.Client
 	WorkItemTrackingClient        workitemtracking.Client
-	InvokeCheckClient             client.ChecksClient
+	InvokeCheckClient             client.InvokeClient
 	ManualApprovalCheckClient     client.ManualApprovalClient
 	ExclusiveLockCheckClient      client.ExclusiveLockClient
 	GitAppClient                  githubappclient.GithubAppClient

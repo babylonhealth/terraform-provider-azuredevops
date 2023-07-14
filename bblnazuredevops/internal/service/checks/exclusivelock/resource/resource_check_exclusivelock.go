@@ -60,7 +60,7 @@ func createCheck(ctx context.Context, d *schema.ResourceData, m interface{}) dia
 
 	check := buildExclusiveLockValuesFromSchema(d)
 
-	resp, err := clients.ExclusiveLockCheckClient.AddExclusiveLockCheck(projectID, resourceID, check)
+	resp, err := clients.ExclusiveLockCheckClient.AddExclusiveLockCheck(ctx, projectID, resourceID, check)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -86,7 +86,7 @@ func readCheck(ctx context.Context, d *schema.ResourceData, m interface{}) diag.
 		return diag.FromErr(err)
 	}
 
-	checkConfig, found, err := clients.ExclusiveLockCheckClient.GetExclusiveLockCheckByID(projectID, resourceID, idInt)
+	checkConfig, found, err := clients.ExclusiveLockCheckClient.GetExclusiveLockCheckByID(ctx, projectID, resourceID, idInt)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -110,7 +110,7 @@ func updateCheck(ctx context.Context, d *schema.ResourceData, m interface{}) dia
 
 	check := buildExclusiveLockValuesFromSchema(d)
 
-	_, err := clients.ExclusiveLockCheckClient.UpdateExclusiveLockCheck(projectID, resourceID, d.Id(), check)
+	_, err := clients.ExclusiveLockCheckClient.UpdateExclusiveLockCheck(ctx, projectID, resourceID, d.Id(), check)
 	if err != nil {
 		return diag.FromErr(err)
 	}

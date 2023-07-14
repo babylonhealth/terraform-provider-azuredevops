@@ -102,7 +102,7 @@ func createCheck(ctx context.Context, d *schema.ResourceData, m interface{}) dia
 
 	check := buildInvokeRESTAPIValuesFromSchema(d)
 
-	resp, err := clients.InvokeCheckClient.AddInvokeRestAPICheck(projectID, resourceID, check)
+	resp, err := clients.InvokeCheckClient.AddInvokeRestAPICheck(ctx, projectID, resourceID, check)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -127,7 +127,7 @@ func readCheck(ctx context.Context, d *schema.ResourceData, m interface{}) diag.
 		return diag.FromErr(err)
 	}
 
-	checkConfig, found, err := clients.InvokeCheckClient.GetInvokeRestAPICheckByID(projectId, resourceId, idInt)
+	checkConfig, found, err := clients.InvokeCheckClient.GetInvokeRestAPICheckByID(ctx, projectId, resourceId, idInt)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -173,7 +173,7 @@ func updateCheck(ctx context.Context, d *schema.ResourceData, m interface{}) dia
 
 	check := buildInvokeRESTAPIValuesFromSchema(d)
 
-	_, err := clients.InvokeCheckClient.UpdateCheck(projectID, resourceID, d.Id(), check)
+	_, err := clients.InvokeCheckClient.UpdateCheck(ctx, projectID, resourceID, d.Id(), check)
 	if err != nil {
 		return diag.FromErr(err)
 	}

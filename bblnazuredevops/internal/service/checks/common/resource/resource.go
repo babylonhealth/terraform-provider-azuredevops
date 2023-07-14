@@ -15,7 +15,7 @@ func DeleteCheckContext(ctx context.Context, d *schema.ResourceData, m interface
 	projectID := d.Get("project_id").(string)
 	checkId := d.Id()
 
-	return diag.FromErr(clients.InvokeCheckClient.DeleteCheck(projectID, checkId))
+	return diag.FromErr(clients.InvokeCheckClient.DeleteCheck(ctx, projectID, checkId))
 }
 
 func buildInvokeRESTAPIValuesFromSchema(d *schema.ResourceData) model.InvokeRESTAPIValues {
