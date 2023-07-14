@@ -238,7 +238,7 @@ func TestClient_GetCheckByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			hr := invokerestapimodel.HeirarchyResp{}
+			hr := invokerestapimodel.HierarchyResp{}
 			configData := []invokerestapimodel.CheckConfigurationData{tt.want}
 			hr.DataProviders.MsVssPipelinechecksChecksDataProvider.CheckConfigurationDataList = configData
 

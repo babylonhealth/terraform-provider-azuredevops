@@ -118,7 +118,7 @@ func (c *Client) getInvokeRestAPIChecks(projectID string, resourceID string) ([]
 		return []invokerestapimodel.CheckConfigurationData{}, err
 	}
 
-	result := invokerestapimodel.HeirarchyResp{}
+	result := invokerestapimodel.HierarchyResp{}
 	err = json.Unmarshal(allChecksBytes, &result)
 	if err != nil {
 		return []invokerestapimodel.CheckConfigurationData{}, err
