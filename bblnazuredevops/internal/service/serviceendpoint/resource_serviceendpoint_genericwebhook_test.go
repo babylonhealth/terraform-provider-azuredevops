@@ -129,6 +129,14 @@ func Test_expandServiceEndpointGenericWebhook(t *testing.T) {
 				Type:        converter.String("generic"),
 				Url:         converter.String("http://http.cat"),
 				Name:        converter.String(""),
+				ServiceEndpointProjectReferences: &[]serviceendpoint.ServiceEndpointProjectReference{
+					{
+						Name: converter.String(""),
+						ProjectReference: &serviceendpoint.ProjectReference{
+							Id: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
+						},
+					},
+				},
 			},
 			wantProject: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
 		},
@@ -174,7 +182,7 @@ func Test_expandServiceEndpointGenericWebhook(t *testing.T) {
 			}
 
 			if diff := deep.Equal(got1, tt.wantProject); len(diff) > 0 {
-				t.Errorf("expandServiceEndpointGenericWebhook() got1 = %v, want %v", got1, tt.wantProject)
+				t.Errorf("expandServiceEndpointGenericWebhook() got1 = %v, wantServiceEndpoint %v", got1, tt.wantProject)
 			}
 		})
 	}

@@ -96,6 +96,7 @@ func TestResourceServiceEndpointBabylonAwsIam(t *testing.T) {
 }
 
 func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
+	projectId := uuid.MustParse("3c49c3b6-a06d-424d-a6b6-0cd375ee9261")
 	type args struct {
 		username     string
 		password     string
@@ -103,11 +104,11 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 		project      string
 	}
 	tests := []struct {
-		name        string
-		args        args
-		want        *serviceendpoint.ServiceEndpoint
-		wantProject *uuid.UUID
-		wantErr     bool
+		name                string
+		args                args
+		wantServiceEndpoint *serviceendpoint.ServiceEndpoint
+		wantProject         *uuid.UUID
+		wantErr             bool
 	}{
 		{
 			name: "test expandServiceEndpoint",
@@ -117,7 +118,7 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 				globaRoleArn: "roleArn",
 				project:      "3c49c3b6-a06d-424d-a6b6-0cd375ee9261",
 			},
-			want: &serviceendpoint.ServiceEndpoint{
+			wantServiceEndpoint: &serviceendpoint.ServiceEndpoint{
 				Authorization: &serviceendpoint.EndpointAuthorization{
 					Parameters: &map[string]string{
 						"username":             "user",
@@ -133,6 +134,14 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 				Type:        converter.String(BABYLON_AWS_IAM_SERVICE_CONNECTION_TYPE),
 				Name:        converter.String(""),
 				Url:         converter.String("https://aws.amazon.com/"),
+				ServiceEndpointProjectReferences: &[]serviceendpoint.ServiceEndpointProjectReference{
+					{
+						Name: converter.String(""),
+						ProjectReference: &serviceendpoint.ProjectReference{
+							Id: &projectId,
+						},
+					},
+				},
 			},
 			wantProject: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
 		},
@@ -168,17 +177,17 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 				t.Error(err)
 			}
 
-			got, got1, err := expandServiceEndpointBabylonAwsIam(resourceData)
+			serviceEndpoint, projectId, err := expandServiceEndpointBabylonAwsIam(resourceData)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("expandServiceEndpointBabylonAwsIam() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if diff := deep.Equal(got, tt.want); len(diff) > 0 {
+			if diff := deep.Equal(serviceEndpoint, tt.wantServiceEndpoint); len(diff) > 0 {
 				t.Errorf("expandServiceEndpointBabylonAwsIam() mismatch:\n%s", diff)
 			}
 
-			if diff := deep.Equal(got1, tt.wantProject); len(diff) > 0 {
-				t.Errorf("expandServiceEndpointBabylonAwsIam() got1 = %v, want %v", got1, tt.wantProject)
+			if diff := deep.Equal(projectId, tt.wantProject); len(diff) > 0 {
+				t.Errorf("expandServiceEndpointBabylonAwsIam() projectId = %v, wantServiceEndpoint %v", projectId, tt.wantProject)
 			}
 		})
 	}

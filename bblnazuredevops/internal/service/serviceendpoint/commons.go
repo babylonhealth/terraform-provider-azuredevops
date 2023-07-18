@@ -92,11 +92,20 @@ func doBaseExpansion(d *schema.ResourceData) (*serviceendpoint.ServiceEndpoint, 
 		serviceEndpointID = &parsedID
 	}
 	projectID := uuid.MustParse(d.Get("project_id").(string))
+	name := converter.String(d.Get("service_endpoint_name").(string))
 	serviceEndpoint := &serviceendpoint.ServiceEndpoint{
 		Id:          serviceEndpointID,
-		Name:        converter.String(d.Get("service_endpoint_name").(string)),
+		Name:        name,
 		Owner:       converter.String("library"),
 		Description: converter.String(d.Get("description").(string)),
+		ServiceEndpointProjectReferences: &[]serviceendpoint.ServiceEndpointProjectReference{
+			{
+				Name: name,
+				ProjectReference: &serviceendpoint.ProjectReference{
+					Id: &projectID,
+				},
+			},
+		},
 	}
 
 	return serviceEndpoint, &projectID
@@ -108,9 +117,12 @@ func doBaseFlattening(d *schema.ResourceData, serviceEndpoint *serviceendpoint.S
 	d.Set("service_endpoint_name", serviceEndpoint.Name)
 	d.Set("project_id", projectID.String())
 	d.Set("description", serviceEndpoint.Description)
-	d.Set("authorization", &map[string]interface{}{
-		"scheme": *serviceEndpoint.Authorization.Scheme,
-	})
+
+	if serviceEndpoint.Authorization != nil && serviceEndpoint.Authorization.Scheme != nil {
+		d.Set("authorization", &map[string]interface{}{
+			"scheme": *serviceEndpoint.Authorization.Scheme,
+		})
+	}
 }
 
 // makeProtectedSchema create protected schema
@@ -168,7 +180,7 @@ func genServiceEndpointCreateFunc(flatFunc flatFunc, expandFunc expandFunc) func
 			return fmt.Errorf(" waiting for service endpoint ready. %v ", err)
 		}
 
-		flatFunc(d, createdServiceEndpoint, projectID)
+		d.SetId(createdServiceEndpoint.Id.String())
 		return genServiceEndpointReadFunc(flatFunc)(d, m)
 	}
 }
@@ -183,13 +195,17 @@ func genServiceEndpointReadFunc(flatFunc flatFunc) func(d *schema.ResourceData, 
 			return fmt.Errorf("Error parsing the service endpoint ID from the Terraform resource data: %v", err)
 		}
 		serviceEndpointID = &parsedServiceEndpointID
-		projectID := converter.UUID(d.Get("project_id").(string))
+		projectID, err := uuid.Parse(d.Get("project_id").(string))
+		if err != nil {
+			return err
+		}
 
 		serviceEndpoint, err := clients.ServiceEndpointClient.GetServiceEndpointDetails(
 			clients.Ctx,
 			serviceendpoint.GetServiceEndpointDetailsArgs{
-				EndpointId: serviceEndpointID,
-				Project:    converter.String(projectID.String()),
+				EndpointId:   serviceEndpointID,
+				Project:      converter.String(projectID.String()),
+				ActionFilter: &serviceendpoint.ServiceEndpointActionFilterValues.Manage,
 			},
 		)
 		if err != nil {
@@ -204,7 +220,7 @@ func genServiceEndpointReadFunc(flatFunc flatFunc) func(d *schema.ResourceData, 
 			// e.g. service endpoint has been deleted separately without TF
 			d.SetId("")
 		} else {
-			flatFunc(d, serviceEndpoint, projectID)
+			flatFunc(d, serviceEndpoint, &projectID)
 		}
 		return nil
 	}
@@ -241,9 +257,18 @@ func genServiceEndpointDeleteFunc(expandFunc expandFunc) schema.DeleteFunc {
 }
 
 // Make the Azure DevOps API call to create the endpoint
-func createServiceEndpoint(clients *client.AggregatedClient, endpoint *serviceendpoint.ServiceEndpoint, project *uuid.UUID) (*serviceendpoint.ServiceEndpoint, error) {
+func createServiceEndpoint(clients *client.AggregatedClient, endpoint *serviceendpoint.ServiceEndpoint, projectID *uuid.UUID) (*serviceendpoint.ServiceEndpoint, error) {
 	if strings.EqualFold(*endpoint.Type, "github") && strings.EqualFold(*endpoint.Authorization.Scheme, "InstallationToken") {
 		return nil, fmt.Errorf("Github Apps must be created on Github and then can be imported")
+	}
+
+	endpoint.ServiceEndpointProjectReferences = &[]serviceendpoint.ServiceEndpointProjectReference{
+		{
+			ProjectReference: &serviceendpoint.ProjectReference{
+				Id: projectID,
+			},
+			Name: endpoint.Name,
+		},
 	}
 	createdServiceEndpoint, err := clients.ServiceEndpointClient.CreateServiceEndpoint(
 		clients.Ctx,
@@ -282,13 +307,11 @@ func updateServiceEndpoint(clients *client.AggregatedClient, endpoint *serviceen
 	if strings.EqualFold(*endpoint.Type, "github") && strings.EqualFold(*endpoint.Authorization.Scheme, "InstallationToken") {
 		return nil, fmt.Errorf("Github Apps can not be updated must match imported values exactly")
 	}
-	endpoint.ServiceEndpointProjectReferences = &[]serviceendpoint.ServiceEndpointProjectReference{
-		{
-			ProjectReference: &serviceendpoint.ProjectReference{
-				Id: projectID,
-			},
-		},
+
+	if endpoint.ServiceEndpointProjectReferences == nil || len(*endpoint.ServiceEndpointProjectReferences) <= 0 {
+		return nil, fmt.Errorf("A ServiceEndpoint requires at least one ServiceEndpointProjectReference")
 	}
+
 	updatedServiceEndpoint, err := clients.ServiceEndpointClient.UpdateServiceEndpoint(
 		clients.Ctx,
 		serviceendpoint.UpdateServiceEndpointArgs{
