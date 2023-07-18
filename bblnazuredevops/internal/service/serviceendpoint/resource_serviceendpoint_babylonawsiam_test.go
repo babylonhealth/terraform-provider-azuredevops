@@ -136,7 +136,8 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 				Url:         converter.String("https://aws.amazon.com/"),
 				ServiceEndpointProjectReferences: &[]serviceendpoint.ServiceEndpointProjectReference{
 					{
-						Name: converter.String(""),
+						Name:        converter.String(""),
+						Description: converter.String("Managed by Terraform"),
 						ProjectReference: &serviceendpoint.ProjectReference{
 							Id: &projectId,
 						},

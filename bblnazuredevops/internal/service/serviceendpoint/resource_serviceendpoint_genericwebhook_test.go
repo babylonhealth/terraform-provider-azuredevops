@@ -131,7 +131,8 @@ func Test_expandServiceEndpointGenericWebhook(t *testing.T) {
 				Name:        converter.String(""),
 				ServiceEndpointProjectReferences: &[]serviceendpoint.ServiceEndpointProjectReference{
 					{
-						Name: converter.String(""),
+						Name:        converter.String(""),
+						Description: converter.String("Managed by Terraform"),
 						ProjectReference: &serviceendpoint.ProjectReference{
 							Id: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
 						},
