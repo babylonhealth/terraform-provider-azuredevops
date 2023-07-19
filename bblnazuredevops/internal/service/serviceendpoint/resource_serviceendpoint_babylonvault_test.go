@@ -1,14 +1,15 @@
 package serviceendpoint
 
 import (
+	"github.com/google/uuid"
 	"testing"
 
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
 	"github.com/go-test/deep"
 	"github.com/hashicorp/go-multierror"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"github.com/microsoft/azure-devops-go-api/azuredevops/serviceendpoint"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/microsoft/azure-devops-go-api/azuredevops/v6/serviceendpoint"
 )
 
 func TestResourceServiceEndpointBabylonVault(t *testing.T) {
@@ -82,7 +83,7 @@ func Test_expandServiceEndpointBabylonVault(t *testing.T) {
 		name        string
 		args        args
 		want        *serviceendpoint.ServiceEndpoint
-		wantProject *string
+		wantProject *uuid.UUID
 		wantErr     bool
 	}{
 		{
@@ -90,7 +91,7 @@ func Test_expandServiceEndpointBabylonVault(t *testing.T) {
 			args: args{
 				url:       "https://vault.babylonhealth.com",
 				vaultRole: "devtest",
-				project:   "project",
+				project:   "3c49c3b6-a06d-424d-a6b6-0cd375ee9261",
 			},
 			want: &serviceendpoint.ServiceEndpoint{
 				Authorization: &serviceendpoint.EndpointAuthorization{
@@ -105,8 +106,17 @@ func Test_expandServiceEndpointBabylonVault(t *testing.T) {
 				Type:        converter.String(BABYLON_VAULT_SERVICE_CONNECTION_TYPE),
 				Name:        converter.String(""),
 				Url:         converter.String("https://vault.babylonhealth.com"),
+				ServiceEndpointProjectReferences: &[]serviceendpoint.ServiceEndpointProjectReference{
+					{
+						Name:        converter.String(""),
+						Description: converter.String("Managed by Terraform"),
+						ProjectReference: &serviceendpoint.ProjectReference{
+							Id: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
+						},
+					},
+				},
 			},
-			wantProject: converter.String("project"),
+			wantProject: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
 		},
 	}
 	for _, tt := range tests {
@@ -145,7 +155,7 @@ func Test_expandServiceEndpointBabylonVault(t *testing.T) {
 			}
 
 			if diff := deep.Equal(got1, tt.wantProject); len(diff) > 0 {
-				t.Errorf("ResourceServiceEndpointBabylonVault() got1 = %v, want %v", got1, tt.wantProject)
+				t.Errorf("ResourceServiceEndpointBabylonVault() got1 = %v, wantServiceEndpoint %v", got1, tt.wantProject)
 			}
 		})
 	}
@@ -155,7 +165,7 @@ func Test_flattenServiceEndpointBabylonVault(t *testing.T) {
 	type args struct {
 		d               *schema.ResourceData
 		serviceEndpoint *serviceendpoint.ServiceEndpoint
-		projectID       *string
+		projectID       *uuid.UUID
 	}
 	tests := []struct {
 		name     string
@@ -175,7 +185,7 @@ func Test_flattenServiceEndpointBabylonVault(t *testing.T) {
 						Scheme:     converter.String("None"),
 					},
 				},
-				projectID: converter.String("project"),
+				projectID: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
 			},
 			expected: map[string]string{
 				"id":                    "1ceae7ff-565c-4cdf-9214-6e2246cba764",
@@ -184,7 +194,7 @@ func Test_flattenServiceEndpointBabylonVault(t *testing.T) {
 				"description":           "",
 				"url":                   "https://vault.babylonhealth.com",
 				"vault_role":            "devtest",
-				"project_id":            "project",
+				"project_id":            "3c49c3b6-a06d-424d-a6b6-0cd375ee9261",
 				"service_endpoint_name": "",
 			},
 		},

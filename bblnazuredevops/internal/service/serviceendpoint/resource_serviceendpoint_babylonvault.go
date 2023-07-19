@@ -2,13 +2,14 @@ package serviceendpoint
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"strings"
 
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/tfhelper"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"github.com/microsoft/azure-devops-go-api/azuredevops/serviceendpoint"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/microsoft/azure-devops-go-api/azuredevops/v6/serviceendpoint"
 )
 
 const BABYLON_VAULT_SERVICE_CONNECTION_TYPE string = "babylon-service-endpoint-vault"
@@ -42,7 +43,7 @@ func ResourceServiceEndpointBabylonVault() *schema.Resource {
 }
 
 // Convert internal Terraform data structure to an AzDO data structure
-func expandServiceEndpointBabylonVault(d *schema.ResourceData) (*serviceendpoint.ServiceEndpoint, *string, error) {
+func expandServiceEndpointBabylonVault(d *schema.ResourceData) (*serviceendpoint.ServiceEndpoint, *uuid.UUID, error) {
 	serviceEndpoint, projectID := doBaseExpansion(d)
 	serviceEndpoint.Authorization = &serviceendpoint.EndpointAuthorization{
 		Parameters: &map[string]string{},
@@ -55,7 +56,7 @@ func expandServiceEndpointBabylonVault(d *schema.ResourceData) (*serviceendpoint
 }
 
 // Convert AzDO data structure to internal Terraform data structure
-func flattenServiceEndpointBabylonVault(d *schema.ResourceData, serviceEndpoint *serviceendpoint.ServiceEndpoint, projectID *string) {
+func flattenServiceEndpointBabylonVault(d *schema.ResourceData, serviceEndpoint *serviceendpoint.ServiceEndpoint, projectID *uuid.UUID) {
 	doBaseFlattening(d, serviceEndpoint, projectID)
 	tfhelper.HelpFlattenSecret(d, "password")
 

@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-type HeirarchyResp struct {
+type HierarchyResp struct {
 	DataProviders struct {
 		MsVssPipelinechecksChecksDataProvider struct {
 			CheckConfigurationDataList []CheckConfigurationData `json:"checkConfigurationDataList"`

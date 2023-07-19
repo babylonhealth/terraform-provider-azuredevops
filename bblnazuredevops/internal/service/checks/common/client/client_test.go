@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -56,7 +57,7 @@ func TestClient_DeleteCheck(t *testing.T) {
 
 			c := NewClient(ts.URL, personalAccessToken, &duration)
 
-			if err := c.DeleteCheck(tt.args.projectID, tt.args.checkID); (err != nil) != tt.wantErr {
+			if err := c.DeleteCheck(context.Background(), tt.args.projectID, tt.args.checkID); (err != nil) != tt.wantErr {
 				t.Errorf("DeleteGithubApp() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -117,7 +118,7 @@ func TestClient_AddCheck(t *testing.T) {
 
 			c := NewClient(ts.URL, personalAccessToken, &duration)
 
-			got, err := c.AddInvokeRestAPICheck(tt.args.projectID, tt.args.resourceID, tt.args.check)
+			got, err := c.AddInvokeRestAPICheck(context.Background(), tt.args.projectID, tt.args.resourceID, tt.args.check)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("AddInvokeRestAPICheck() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -185,7 +186,7 @@ func TestClient_UpdateCheck(t *testing.T) {
 
 			duration := 60 * time.Second
 			c := NewClient(ts.URL, "", &duration)
-			gotResp, err := c.UpdateCheck(tt.args.projectID, tt.args.resourceID, tt.args.checkID, tt.args.check)
+			gotResp, err := c.UpdateCheck(context.Background(), tt.args.projectID, tt.args.resourceID, tt.args.checkID, tt.args.check)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UpdateCheck() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -238,7 +239,7 @@ func TestClient_GetCheckByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			hr := invokerestapimodel.HeirarchyResp{}
+			hr := invokerestapimodel.HierarchyResp{}
 			configData := []invokerestapimodel.CheckConfigurationData{tt.want}
 			hr.DataProviders.MsVssPipelinechecksChecksDataProvider.CheckConfigurationDataList = configData
 
@@ -248,7 +249,7 @@ func TestClient_GetCheckByID(t *testing.T) {
 			duration := 60 * time.Second
 			c := NewClient(ts.URL, "", &duration)
 
-			got, found, err := c.GetInvokeRestAPICheckByID(tt.args.projectID, tt.args.resourceID, tt.args.checkID)
+			got, found, err := c.GetInvokeRestAPICheckByID(context.Background(), tt.args.projectID, tt.args.resourceID, tt.args.checkID)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetInvokeRestAPICheckByID() error = %v, wantErr %v", err, tt.wantErr)
@@ -311,7 +312,7 @@ func TestClient_GetManualApprovalCheckByID(t *testing.T) {
 			duration := 60 * time.Second
 			c := NewClient(ts.URL, "", &duration)
 
-			got, found, err := c.GetManualApprovalCheckByID(tt.args.projectID, tt.args.resourceID, tt.args.checkID)
+			got, found, err := c.GetManualApprovalCheckByID(context.Background(), tt.args.projectID, tt.args.resourceID, tt.args.checkID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getManualApprovalChecks() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -401,7 +402,7 @@ func TestClient_AddManualApprovalCheck(t *testing.T) {
 
 			c := NewClient(ts.URL, personalAccessToken, &duration)
 
-			got, err := c.AddManualApprovalCheck(tt.args.projectID, tt.args.resourceID, tt.args.check)
+			got, err := c.AddManualApprovalCheck(context.Background(), tt.args.projectID, tt.args.resourceID, tt.args.check)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("AddManualApprovalCheck() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -489,7 +490,7 @@ func TestClient_UpdateManualApprovalCheck(t *testing.T) {
 
 			c := NewClient(ts.URL, personalAccessToken, &duration)
 
-			got, err := c.UpdateManualApprovalCheck(tt.args.projectID, tt.args.resourceID, tt.args.checkID, tt.args.check)
+			got, err := c.UpdateManualApprovalCheck(context.Background(), tt.args.projectID, tt.args.resourceID, tt.args.checkID, tt.args.check)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UpdateManualApprovalCheck() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -560,7 +561,7 @@ func TestClient_AddExclusiveLockCheck(t *testing.T) {
 
 			c := NewClient(ts.URL, personalAccessToken, &duration)
 
-			got, err := c.AddExclusiveLockCheck(tt.args.projectID, tt.args.resourceID, tt.args.check)
+			got, err := c.AddExclusiveLockCheck(context.Background(), tt.args.projectID, tt.args.resourceID, tt.args.check)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("AddExclusiveLockCheck() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -633,7 +634,7 @@ func TestClient_UpdateExclusiveLockCheck(t *testing.T) {
 
 			c := NewClient(ts.URL, personalAccessToken, &duration)
 
-			got, err := c.UpdateExclusiveLockCheck(tt.args.projectID, tt.args.resourceID, tt.args.checkID, tt.args.check)
+			got, err := c.UpdateExclusiveLockCheck(context.Background(), tt.args.projectID, tt.args.resourceID, tt.args.checkID, tt.args.check)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UpdateExclusiveLockCheck() error = %v, wantErr %v", err, tt.wantErr)
 				return

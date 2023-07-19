@@ -1,41 +1,21 @@
 package resource
 
 import (
+	"context"
 	"fmt"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/invokerestapi/model"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"strconv"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-// See Resource documentation.
-func DeleteCheck(d *schema.ResourceData, m interface{}) error {
+func DeleteCheckContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	clients := m.(*client.AggregatedClient)
 
 	projectID := d.Get("project_id").(string)
 	checkId := d.Id()
 
-	return clients.InvokeCheckClient.DeleteCheck(projectID, checkId)
-}
-
-// See Resource documentation.
-func ExistsCheck(d *schema.ResourceData, m interface{}) (bool, error) {
-	clients := m.(*client.AggregatedClient)
-
-	projectId := d.Get("project_id").(string)
-	resourceId := d.Get("resource_id").(string)
-	id := d.Id()
-
-	idInt, err := strconv.ParseInt(id, 10, 0)
-	if err != nil {
-		return false, err
-	}
-
-	// any check  client will work as the ID is specified in the same part of the json response
-	// the body is ignored, only if it is found or not is relevant
-	_, found, err := clients.InvokeCheckClient.GetInvokeRestAPICheckByID(projectId, resourceId, idInt)
-
-	return found, err
+	return diag.FromErr(clients.InvokeCheckClient.DeleteCheck(ctx, projectID, checkId))
 }
 
 func buildInvokeRESTAPIValuesFromSchema(d *schema.ResourceData) model.InvokeRESTAPIValues {

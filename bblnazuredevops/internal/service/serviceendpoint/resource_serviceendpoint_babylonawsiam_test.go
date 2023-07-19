@@ -2,15 +2,16 @@ package serviceendpoint
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"testing"
 
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/tfhelper"
 	"github.com/go-test/deep"
 	"github.com/hashicorp/go-multierror"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"github.com/microsoft/azure-devops-go-api/azuredevops/serviceendpoint"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/microsoft/azure-devops-go-api/azuredevops/v6/serviceendpoint"
 )
 
 func TestResourceServiceEndpointBabylonAwsIam(t *testing.T) {
@@ -95,6 +96,7 @@ func TestResourceServiceEndpointBabylonAwsIam(t *testing.T) {
 }
 
 func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
+	projectId := uuid.MustParse("3c49c3b6-a06d-424d-a6b6-0cd375ee9261")
 	type args struct {
 		username     string
 		password     string
@@ -102,11 +104,11 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 		project      string
 	}
 	tests := []struct {
-		name        string
-		args        args
-		want        *serviceendpoint.ServiceEndpoint
-		wantProject *string
-		wantErr     bool
+		name                string
+		args                args
+		wantServiceEndpoint *serviceendpoint.ServiceEndpoint
+		wantProject         *uuid.UUID
+		wantErr             bool
 	}{
 		{
 			name: "test expandServiceEndpoint",
@@ -114,9 +116,9 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 				username:     "user",
 				password:     "password",
 				globaRoleArn: "roleArn",
-				project:      "project",
+				project:      "3c49c3b6-a06d-424d-a6b6-0cd375ee9261",
 			},
-			want: &serviceendpoint.ServiceEndpoint{
+			wantServiceEndpoint: &serviceendpoint.ServiceEndpoint{
 				Authorization: &serviceendpoint.EndpointAuthorization{
 					Parameters: &map[string]string{
 						"username":             "user",
@@ -132,8 +134,17 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 				Type:        converter.String(BABYLON_AWS_IAM_SERVICE_CONNECTION_TYPE),
 				Name:        converter.String(""),
 				Url:         converter.String("https://aws.amazon.com/"),
+				ServiceEndpointProjectReferences: &[]serviceendpoint.ServiceEndpointProjectReference{
+					{
+						Name:        converter.String(""),
+						Description: converter.String("Managed by Terraform"),
+						ProjectReference: &serviceendpoint.ProjectReference{
+							Id: &projectId,
+						},
+					},
+				},
 			},
-			wantProject: converter.String("project"),
+			wantProject: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
 		},
 	}
 	for _, tt := range tests {
@@ -167,17 +178,17 @@ func Test_expandServiceEndpointBabylonAwsIam(t *testing.T) {
 				t.Error(err)
 			}
 
-			got, got1, err := expandServiceEndpointBabylonAwsIam(resourceData)
+			serviceEndpoint, projectId, err := expandServiceEndpointBabylonAwsIam(resourceData)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("expandServiceEndpointBabylonAwsIam() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if diff := deep.Equal(got, tt.want); len(diff) > 0 {
+			if diff := deep.Equal(serviceEndpoint, tt.wantServiceEndpoint); len(diff) > 0 {
 				t.Errorf("expandServiceEndpointBabylonAwsIam() mismatch:\n%s", diff)
 			}
 
-			if diff := deep.Equal(got1, tt.wantProject); len(diff) > 0 {
-				t.Errorf("expandServiceEndpointBabylonAwsIam() got1 = %v, want %v", got1, tt.wantProject)
+			if diff := deep.Equal(projectId, tt.wantProject); len(diff) > 0 {
+				t.Errorf("expandServiceEndpointBabylonAwsIam() projectId = %v, wantServiceEndpoint %v", projectId, tt.wantProject)
 			}
 		})
 	}
@@ -187,7 +198,7 @@ func Test_flattenServiceEndpointBabylonAwsIam(t *testing.T) {
 	type args struct {
 		d               *schema.ResourceData
 		serviceEndpoint *serviceendpoint.ServiceEndpoint
-		projectID       *string
+		projectID       *uuid.UUID
 	}
 	tests := []struct {
 		name     string
@@ -211,7 +222,7 @@ func Test_flattenServiceEndpointBabylonAwsIam(t *testing.T) {
 						Scheme: converter.String("UsernamePassword"),
 					},
 				},
-				projectID: converter.String("project"),
+				projectID: converter.UUID("3c49c3b6-a06d-424d-a6b6-0cd375ee9261"),
 			},
 			expected: map[string]string{
 				"id":                      "1ceae7ff-565c-4cdf-9214-6e2246cba764",
@@ -221,7 +232,7 @@ func Test_flattenServiceEndpointBabylonAwsIam(t *testing.T) {
 				"password":                "password1",
 				"global_role_arn":         "roleArn1",
 				"global_sts_session_name": "sessionName1",
-				"project_id":              "project",
+				"project_id":              "3c49c3b6-a06d-424d-a6b6-0cd375ee9261",
 				"service_endpoint_name":   "",
 				"username":                "user1",
 			},

@@ -3,7 +3,7 @@ version: 2
 
 prelude: &prelude
   docker:
-  - image: golang:1.16-alpine
+  - image: golang:1.19-alpine
   working_directory: ~/babylon
 
 use_docker: &use_docker setup_remote_docker

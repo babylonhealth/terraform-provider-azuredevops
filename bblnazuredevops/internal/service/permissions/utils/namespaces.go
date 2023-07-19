@@ -10,9 +10,9 @@ import (
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/client"
 	"github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/utils/converter"
 	"github.com/google/uuid"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/microsoft/azure-devops-go-api/azuredevops/identity"
-	"github.com/microsoft/azure-devops-go-api/azuredevops/security"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/microsoft/azure-devops-go-api/azuredevops/v6/identity"
+	"github.com/microsoft/azure-devops-go-api/azuredevops/v6/security"
 )
 
 // ActionName type for an permission actions

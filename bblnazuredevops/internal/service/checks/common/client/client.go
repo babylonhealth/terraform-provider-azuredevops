@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	exclusivelockmodel "github.com/babylonhealth/terraform-provider-bblnazuredevops/bblnazuredevops/internal/service/checks/exclusivelock/model"
@@ -34,10 +35,10 @@ type GetChecksPayload struct {
 	} `json:"dataProviderContext"`
 }
 
-func (c *Client) GetInvokeRestAPICheckByID(projectID string, resourceID string, checkID int64) (invokerestapimodel.CheckConfigurationData, bool, error) {
+func (c *Client) GetInvokeRestAPICheckByID(ctx context.Context, projectID string, resourceID string, checkID int64) (invokerestapimodel.CheckConfigurationData, bool, error) {
 	found := false
 
-	checkList, err := c.getInvokeRestAPIChecks(projectID, resourceID)
+	checkList, err := c.getInvokeRestAPIChecks(ctx, projectID, resourceID)
 
 	if err != nil {
 		return invokerestapimodel.CheckConfigurationData{}, found, err
@@ -50,14 +51,13 @@ func (c *Client) GetInvokeRestAPICheckByID(projectID string, resourceID string, 
 		}
 	}
 
-	return invokerestapimodel.CheckConfigurationData{}, found, fmt.Errorf("no check found with id: %v under resource: %s, in project: %s",
-		checkID, resourceID, projectID)
+	return invokerestapimodel.CheckConfigurationData{}, found, nil
 }
 
-func (c *Client) GetManualApprovalCheckByID(projectID string, resourceID string, checkID int64) (manualapprovalmodel.ManualApprovalCheckConfig, bool, error) {
+func (c *Client) GetManualApprovalCheckByID(ctx context.Context, projectID string, resourceID string, checkID int64) (manualapprovalmodel.ManualApprovalCheckConfig, bool, error) {
 	found := false
 
-	checkList, err := c.getManualApprovalChecks(projectID, resourceID)
+	checkList, err := c.getManualApprovalChecks(ctx, projectID, resourceID)
 	if err != nil {
 		return manualapprovalmodel.ManualApprovalCheckConfig{}, found, err
 	}
@@ -69,14 +69,13 @@ func (c *Client) GetManualApprovalCheckByID(projectID string, resourceID string,
 		}
 	}
 
-	return manualapprovalmodel.ManualApprovalCheckConfig{}, found, fmt.Errorf("no check found with id: %v under resource: %s, in project: %s",
-		checkID, resourceID, projectID)
+	return manualapprovalmodel.ManualApprovalCheckConfig{}, found, nil
 }
 
-func (c *Client) GetExclusiveLockCheckByID(projectID string, resourceID string, checkID int64) (exclusivelockmodel.ExclusiveLockCheckConfig, bool, error) {
+func (c *Client) GetExclusiveLockCheckByID(ctx context.Context, projectID string, resourceID string, checkID int64) (exclusivelockmodel.ExclusiveLockCheckConfig, bool, error) {
 	found := false
 
-	checkList, err := c.getExclusiveLockChecks(projectID, resourceID)
+	checkList, err := c.getExclusiveLockChecks(ctx, projectID, resourceID)
 	if err != nil {
 		return exclusivelockmodel.ExclusiveLockCheckConfig{}, found, err
 	}
@@ -88,11 +87,11 @@ func (c *Client) GetExclusiveLockCheckByID(projectID string, resourceID string, 
 		}
 	}
 
-	return exclusivelockmodel.ExclusiveLockCheckConfig{}, found, fmt.Errorf("no check found with id: %v under resource: %s, in project: %s",
+	return exclusivelockmodel.ExclusiveLockCheckConfig{}, found, fmt.Errorf("no exclusivelock check found with id: %v under resource: %s, in project: %s",
 		checkID, resourceID, projectID)
 }
 
-func (c *Client) getAllChecks(projectID string, resourceID string) ([]byte, error) {
+func (c *Client) getAllChecks(ctx context.Context, projectID string, resourceID string) ([]byte, error) {
 	payload := GetChecksPayload{}
 	payload.ContributionIds = []string{"ms.vss-pipelinechecks.checks-data-provider"}
 	payload.DataProviderContext.Properties.ResourceID = resourceID
@@ -104,7 +103,7 @@ func (c *Client) getAllChecks(projectID string, resourceID string) ([]byte, erro
 	}
 
 	url := "/_apis/Contribution/HierarchyQuery"
-	respBytes, err := c.SendRequest("POST", url, string(jsonPayload))
+	respBytes, err := c.SendRequest(ctx, "POST", url, string(jsonPayload))
 	if err != nil {
 		return []byte{}, err
 	}
@@ -112,13 +111,13 @@ func (c *Client) getAllChecks(projectID string, resourceID string) ([]byte, erro
 	return respBytes, nil
 }
 
-func (c *Client) getInvokeRestAPIChecks(projectID string, resourceID string) ([]invokerestapimodel.CheckConfigurationData, error) {
-	allChecksBytes, err := c.getAllChecks(projectID, resourceID)
+func (c *Client) getInvokeRestAPIChecks(ctx context.Context, projectID string, resourceID string) ([]invokerestapimodel.CheckConfigurationData, error) {
+	allChecksBytes, err := c.getAllChecks(ctx, projectID, resourceID)
 	if err != nil {
 		return []invokerestapimodel.CheckConfigurationData{}, err
 	}
 
-	result := invokerestapimodel.HeirarchyResp{}
+	result := invokerestapimodel.HierarchyResp{}
 	err = json.Unmarshal(allChecksBytes, &result)
 	if err != nil {
 		return []invokerestapimodel.CheckConfigurationData{}, err
@@ -127,8 +126,8 @@ func (c *Client) getInvokeRestAPIChecks(projectID string, resourceID string) ([]
 	return result.DataProviders.MsVssPipelinechecksChecksDataProvider.CheckConfigurationDataList, nil
 }
 
-func (c *Client) getManualApprovalChecks(projectID string, resourceID string) ([]manualapprovalmodel.ManualApprovalCheckConfig, error) {
-	allChecksBytes, err := c.getAllChecks(projectID, resourceID)
+func (c *Client) getManualApprovalChecks(ctx context.Context, projectID string, resourceID string) ([]manualapprovalmodel.ManualApprovalCheckConfig, error) {
+	allChecksBytes, err := c.getAllChecks(ctx, projectID, resourceID)
 	if err != nil {
 		return []manualapprovalmodel.ManualApprovalCheckConfig{}, err
 	}
@@ -148,8 +147,8 @@ func (c *Client) getManualApprovalChecks(projectID string, resourceID string) ([
 	return configs, nil
 }
 
-func (c *Client) getExclusiveLockChecks(projectID string, resourceID string) ([]exclusivelockmodel.ExclusiveLockCheckConfig, error) {
-	allChecksBytes, err := c.getAllChecks(projectID, resourceID)
+func (c *Client) getExclusiveLockChecks(ctx context.Context, projectID string, resourceID string) ([]exclusivelockmodel.ExclusiveLockCheckConfig, error) {
+	allChecksBytes, err := c.getAllChecks(ctx, projectID, resourceID)
 	if err != nil {
 		return []exclusivelockmodel.ExclusiveLockCheckConfig{}, err
 	}
@@ -169,7 +168,7 @@ func (c *Client) getExclusiveLockChecks(projectID string, resourceID string) ([]
 	return configs, nil
 }
 
-func (c *Client) AddInvokeRestAPICheck(projectID string, resourceID string, check invokerestapimodel.InvokeRESTAPIValues) (invokerestapimodel.CheckConfiguration, error) {
+func (c *Client) AddInvokeRestAPICheck(ctx context.Context, projectID string, resourceID string, check invokerestapimodel.InvokeRESTAPIValues) (invokerestapimodel.CheckConfiguration, error) {
 	restAPIPayload := populateInvokeRestAPIPayload(resourceID, check)
 
 	jsonPayload, err := json.Marshal(restAPIPayload)
@@ -178,7 +177,7 @@ func (c *Client) AddInvokeRestAPICheck(projectID string, resourceID string, chec
 	}
 
 	url := fmt.Sprintf("/%s/_apis/pipelines/checks/configurations", projectID)
-	respBytes, err := c.SendRequest("POST", url, string(jsonPayload))
+	respBytes, err := c.SendRequest(ctx, "POST", url, string(jsonPayload))
 	if err != nil {
 		return invokerestapimodel.CheckConfiguration{}, err
 	}
@@ -193,7 +192,7 @@ func (c *Client) AddInvokeRestAPICheck(projectID string, resourceID string, chec
 	return checkConf, nil
 }
 
-func (c *Client) AddManualApprovalCheck(projectID string, resourceID string,
+func (c *Client) AddManualApprovalCheck(ctx context.Context, projectID string, resourceID string,
 	check manualapprovalmodel.ManualApprovalValues) (manualapprovalmodel.ManualApprovalCheckConfig, error) {
 	manualApproval := populateManualApprovalPayload(resourceID, check)
 
@@ -203,7 +202,7 @@ func (c *Client) AddManualApprovalCheck(projectID string, resourceID string,
 	}
 
 	url := fmt.Sprintf("/%s/_apis/pipelines/checks/configurations", projectID)
-	respBytes, err := c.SendRequest("POST", url, string(jsonPayload))
+	respBytes, err := c.SendRequest(ctx, "POST", url, string(jsonPayload))
 	if err != nil {
 		return manualapprovalmodel.ManualApprovalCheckConfig{}, err
 	}
@@ -218,7 +217,7 @@ func (c *Client) AddManualApprovalCheck(projectID string, resourceID string,
 	return checkConf, nil
 }
 
-func (c *Client) AddExclusiveLockCheck(projectID string, resourceID string,
+func (c *Client) AddExclusiveLockCheck(ctx context.Context, projectID string, resourceID string,
 	check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error) {
 	exclusiveLock := populateExclusiveLockPayload(resourceID, check)
 
@@ -228,7 +227,7 @@ func (c *Client) AddExclusiveLockCheck(projectID string, resourceID string,
 	}
 
 	url := fmt.Sprintf("/%s/_apis/pipelines/checks/configurations", projectID)
-	respBytes, err := c.SendRequest("POST", url, string(jsonPayload))
+	respBytes, err := c.SendRequest(ctx, "POST", url, string(jsonPayload))
 	if err != nil {
 		return exclusivelockmodel.ExclusiveLockCheckConfig{}, err
 	}
@@ -243,7 +242,7 @@ func (c *Client) AddExclusiveLockCheck(projectID string, resourceID string,
 	return checkConf, nil
 }
 
-func (c *Client) UpdateManualApprovalCheck(projectID string, resourceID string, checkID string,
+func (c *Client) UpdateManualApprovalCheck(ctx context.Context, projectID string, resourceID string, checkID string,
 	check manualapprovalmodel.ManualApprovalValues) (manualapprovalmodel.ManualApprovalCheckConfig, error) {
 	manualApproval := populateManualApprovalPayload(resourceID, check)
 	manualApproval.ID = checkID
@@ -254,7 +253,7 @@ func (c *Client) UpdateManualApprovalCheck(projectID string, resourceID string, 
 	}
 
 	url := fmt.Sprintf("/%s/_apis/pipelines/checks/configurations/%s", projectID, checkID)
-	respBytes, err := c.SendRequest("PATCH", url, string(jsonPayload))
+	respBytes, err := c.SendRequest(ctx, "PATCH", url, string(jsonPayload))
 	if err != nil {
 		return manualapprovalmodel.ManualApprovalCheckConfig{}, err
 	}
@@ -269,7 +268,7 @@ func (c *Client) UpdateManualApprovalCheck(projectID string, resourceID string, 
 	return checkConf, nil
 }
 
-func (c *Client) UpdateExclusiveLockCheck(projectID string, resourceID string, checkID string,
+func (c *Client) UpdateExclusiveLockCheck(ctx context.Context, projectID string, resourceID string, checkID string,
 	check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error) {
 	exclusiveLock := populateExclusiveLockPayload(resourceID, check)
 	exclusiveLock.ID = checkID
@@ -280,7 +279,7 @@ func (c *Client) UpdateExclusiveLockCheck(projectID string, resourceID string, c
 	}
 
 	url := fmt.Sprintf("/%s/_apis/pipelines/checks/configurations/%s", projectID, checkID)
-	respBytes, err := c.SendRequest("PATCH", url, string(jsonPayload))
+	respBytes, err := c.SendRequest(ctx, "PATCH", url, string(jsonPayload))
 	if err != nil {
 		return exclusivelockmodel.ExclusiveLockCheckConfig{}, err
 	}
@@ -295,7 +294,7 @@ func (c *Client) UpdateExclusiveLockCheck(projectID string, resourceID string, c
 	return checkConf, nil
 }
 
-func (c *Client) UpdateCheck(projectID string, resourceID string, checkID string, check invokerestapimodel.InvokeRESTAPIValues) (invokerestapimodel.CheckConfiguration, error) {
+func (c *Client) UpdateCheck(ctx context.Context, projectID string, resourceID string, checkID string, check invokerestapimodel.InvokeRESTAPIValues) (invokerestapimodel.CheckConfiguration, error) {
 	restAPIPayload := populateInvokeRestAPIPayload(resourceID, check)
 	restAPIPayload.ID = checkID
 
@@ -305,7 +304,7 @@ func (c *Client) UpdateCheck(projectID string, resourceID string, checkID string
 	}
 
 	url := fmt.Sprintf("/%s/_apis/pipelines/checks/configurations/%s", projectID, checkID)
-	respBytes, err := c.SendRequest("PATCH", url, string(jsonPayload))
+	respBytes, err := c.SendRequest(ctx, "PATCH", url, string(jsonPayload))
 	if err != nil {
 		return invokerestapimodel.CheckConfiguration{}, err
 	}
@@ -320,9 +319,9 @@ func (c *Client) UpdateCheck(projectID string, resourceID string, checkID string
 	return checkConf, nil
 }
 
-func (c *Client) DeleteCheck(projectID string, checkID string) error {
+func (c *Client) DeleteCheck(ctx context.Context, projectID string, checkID string) error {
 	url := fmt.Sprintf("/%s/_apis/pipelines/checks/configurations/%s", projectID, checkID)
-	_, err := c.SendRequest("DELETE", url, "")
+	_, err := c.SendRequest(ctx, "DELETE", url, "")
 
 	return err
 }
@@ -397,10 +396,8 @@ func populateExclusiveLockPayload(resourceID string,
 	return exclusiveLock
 }
 
-func (c *Client) SendRequest(httpMethod string, url string, jsonPayload string) ([]byte, error) {
-	req, err := http.NewRequest(httpMethod,
-		c.baseUrl+url,
-		bytes.NewBufferString(jsonPayload))
+func (c *Client) SendRequest(ctx context.Context, httpMethod string, url string, jsonPayload string) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, httpMethod, c.baseUrl+url, bytes.NewBufferString(jsonPayload))
 	if err != nil {
 		return []byte{}, err
 	}
@@ -448,22 +445,22 @@ func NewClient(baseUrl string, auth string, timeout *time.Duration) *Client {
 }
 
 type ManualApprovalClient interface {
-	GetManualApprovalCheckByID(projectID string, resourceID string, checkID int64) (manualapprovalmodel.ManualApprovalCheckConfig, bool, error)
-	AddManualApprovalCheck(projectID string, resourceID string, check manualapprovalmodel.ManualApprovalValues) (manualapprovalmodel.ManualApprovalCheckConfig, error)
-	UpdateManualApprovalCheck(projectID string, resourceID string, checkID string, check manualapprovalmodel.ManualApprovalValues) (manualapprovalmodel.ManualApprovalCheckConfig, error)
-	DeleteCheck(projectID string, checkID string) error
+	GetManualApprovalCheckByID(ctx context.Context, projectID string, resourceID string, checkID int64) (manualapprovalmodel.ManualApprovalCheckConfig, bool, error)
+	AddManualApprovalCheck(ctx context.Context, projectID string, resourceID string, check manualapprovalmodel.ManualApprovalValues) (manualapprovalmodel.ManualApprovalCheckConfig, error)
+	UpdateManualApprovalCheck(ctx context.Context, projectID string, resourceID string, checkID string, check manualapprovalmodel.ManualApprovalValues) (manualapprovalmodel.ManualApprovalCheckConfig, error)
+	DeleteCheck(ctx context.Context, projectID string, checkID string) error
 }
 
 type ExclusiveLockClient interface {
-	GetExclusiveLockCheckByID(projectID string, resourceID string, checkID int64) (exclusivelockmodel.ExclusiveLockCheckConfig, bool, error)
-	AddExclusiveLockCheck(projectID string, resourceID string, check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error)
-	UpdateExclusiveLockCheck(projectID string, resourceID string, checkID string, check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error)
-	DeleteCheck(projectID string, checkID string) error
+	GetExclusiveLockCheckByID(ctx context.Context, projectID string, resourceID string, checkID int64) (exclusivelockmodel.ExclusiveLockCheckConfig, bool, error)
+	AddExclusiveLockCheck(ctx context.Context, projectID string, resourceID string, check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error)
+	UpdateExclusiveLockCheck(ctx context.Context, projectID string, resourceID string, checkID string, check exclusivelockmodel.ExclusiveLockValues) (exclusivelockmodel.ExclusiveLockCheckConfig, error)
+	DeleteCheck(ctx context.Context, projectID string, checkID string) error
 }
 
-type ChecksClient interface {
-	GetInvokeRestAPICheckByID(projectID string, resourceID string, checkID int64) (invokerestapimodel.CheckConfigurationData, bool, error)
-	AddInvokeRestAPICheck(projectID string, resourceID string, check invokerestapimodel.InvokeRESTAPIValues) (invokerestapimodel.CheckConfiguration, error)
-	UpdateCheck(projectID string, resourceID string, checkID string, check invokerestapimodel.InvokeRESTAPIValues) (invokerestapimodel.CheckConfiguration, error)
-	DeleteCheck(projectID string, checkID string) error
+type InvokeClient interface {
+	GetInvokeRestAPICheckByID(ctx context.Context, projectID string, resourceID string, checkID int64) (invokerestapimodel.CheckConfigurationData, bool, error)
+	AddInvokeRestAPICheck(ctx context.Context, projectID string, resourceID string, check invokerestapimodel.InvokeRESTAPIValues) (invokerestapimodel.CheckConfiguration, error)
+	UpdateCheck(ctx context.Context, projectID string, resourceID string, checkID string, check invokerestapimodel.InvokeRESTAPIValues) (invokerestapimodel.CheckConfiguration, error)
+	DeleteCheck(ctx context.Context, projectID string, checkID string) error
 }
