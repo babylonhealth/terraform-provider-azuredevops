@@ -9,7 +9,7 @@ prelude: &prelude
 use_docker: &use_docker setup_remote_docker
 
 docker_login: &docker_login
-  run: docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}" babylon.jfrog.io
+  run: docker login -u "${JFROG_DOCKER_USER}" -p "${JFROG_DOCKER_API_KEY}" babylon.jfrog.io
 
 install_base: &install_base
   run: apk add git bash curl gcc build-base g++ jq libc-dev openssh-client
