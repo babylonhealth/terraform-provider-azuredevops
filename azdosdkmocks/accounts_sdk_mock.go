@@ -43,7 +43,7 @@ func (m *MockAccountsClient) GetAccounts(arg0 context.Context, arg1 accounts.Get
 	return ret0, ret1
 }
 
-// GetAccounts indicates an expected call of GetAccounts
+// GetAccounts indicates an expected call of GetAccounts.
 func (mr *MockAccountsClientMockRecorder) GetAccounts(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccounts", reflect.TypeOf((*MockAccountsClient)(nil).GetAccounts), arg0, arg1)
