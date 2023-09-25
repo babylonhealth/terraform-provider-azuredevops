@@ -43,7 +43,7 @@ func (m *MockOperationsClient) GetOperation(arg0 context.Context, arg1 operation
 	return ret0, ret1
 }
 
-// GetOperation indicates an expected call of GetOperation
+// GetOperation indicates an expected call of GetOperation.
 func (mr *MockOperationsClientMockRecorder) GetOperation(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOperation", reflect.TypeOf((*MockOperationsClient)(nil).GetOperation), arg0, arg1)
