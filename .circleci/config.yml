@@ -8,8 +8,8 @@ prelude: &prelude
 
 use_docker: &use_docker setup_remote_docker
 
-quay_login: &quay_login
-  run: docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}" quay.io
+docker_login: &docker_login
+  run: docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}" babylon.jfrog.io
 
 install_base: &install_base
   run: apk add git bash curl gcc build-base g++ jq libc-dev openssh-client
@@ -74,7 +74,7 @@ jobs:
     - *install_docker
     - checkout
     - *use_docker
-    - *quay_login
+    - *docker_login
     - run: babylon/build build
     - run: babylon/build install
   tag-semver:
@@ -84,5 +84,5 @@ jobs:
     - *install_docker
     - checkout
     - *use_docker
-    - *quay_login
+    - *docker_login
     - run: babylon/build tag-semver

@@ -1,6 +1,6 @@
 ARG SHA_VERSION
 
-FROM quay.io/babylonhealth/azure-terraform:${SHA_VERSION}
+FROM babylon.jfrog.io/classic-dev-docker-virtual/babylonhealth/azure-terraform:${SHA_VERSION}
 
 ARG SEMVER_VERSION
 

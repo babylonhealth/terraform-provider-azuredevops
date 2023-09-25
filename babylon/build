@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-CONTAINER_NAME=quay.io/babylonhealth/azure-terraform
+CONTAINER_NAME=babylon.jfrog.io/classic-dev-docker-virtual/babylonhealth/azure-terraform
 BINARY_NAME=terraform-provider-bblnazuredevops
 
 SHA_VERSION=${CIRCLE_SHA1:-latest}
@@ -84,7 +84,7 @@ run_tag_semver() {
         --build-arg SEMVER_VERSION="${SEMVER_VERSION}" \
         -t "${CONTAINER_NAME}:${SEMVER_VERSION}"
 
-    if docker run -e DOCKER_REPO=babylonhealth/azure-terraform -e DOCKER_TAG="${SEMVER_VERSION}" quay.io/babylonhealth/tag-exists; then
+    if docker run -e DOCKER_REPO=babylonhealth/azure-terraform -e DOCKER_TAG="${SEMVER_VERSION}" babylon.jfrog.io/classic-dev-docker-virtual/babylonhealth/tag-exists; then
         echo "Tag ${SEMVER_VERSION} exists!" && exit 1
     else
         docker push "${CONTAINER_NAME}:${SEMVER_VERSION}"
