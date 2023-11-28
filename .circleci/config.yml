@@ -12,12 +12,12 @@ prelude: &prelude
 
 use_docker: &use_docker setup_remote_docker
 
-# ecr_login: &ecr_login
-#   - aws-cli/setup:
-#       role_arn: arn:aws:iam::830214760947:role/sdr-cci-terraform-provider-azuredevops
-#   - aws-ecr/ecr_login:
-#       account_id: '830214760947'
-#       region: eu-west-2
+ecr_login: &ecr_login
+  - aws-cli/setup:
+      role_arn: arn:aws:iam::830214760947:role/sdr-cci-terraform-provider-azuredevops
+  - aws-ecr/ecr_login:
+      account_id: '830214760947'
+      region: eu-west-2
 
 install_base: &install_base
   run: apk add git bash curl gcc build-base g++ jq libc-dev openssh-client
@@ -82,11 +82,7 @@ jobs:
     - *install_docker
     - checkout
     - *use_docker
-    - aws-cli/setup:
-        role_arn: arn:aws:iam::830214760947:role/sdr-cci-terraform-provider-azuredevops
-    - aws-ecr/ecr_login:
-        account_id: '830214760947'
-        region: eu-west-2
+    - *ecr_login
     - run: babylon/build build
     - run: babylon/build install
   tag-semver:
@@ -96,9 +92,5 @@ jobs:
     - *install_docker
     - checkout
     - *use_docker
-    - aws-cli/setup:
-        role_arn: arn:aws:iam::830214760947:role/sdr-cci-terraform-provider-azuredevops
-    - aws-ecr/ecr_login:
-        account_id: '830214760947'
-        region: eu-west-2
+    - *ecr_login
     - run: babylon/build tag-semver
