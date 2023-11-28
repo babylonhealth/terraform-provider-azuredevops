@@ -68,13 +68,10 @@ run_build() {
     cp "${BINARY_NAME}" "${PLUGIN_DIR}"
     docker build . -f babylon/Dockerfile.sha \
         -t "${CONTAINER_NAME}:${SHA_VERSION}"
-    docker tag "${CONTAINER_NAME}:${SHA_VERSION}" \
-        "${CONTAINER_NAME}:latest"
 }
 
 run_install() {
     docker push "${CONTAINER_NAME}:${SHA_VERSION}"
-    docker push "${CONTAINER_NAME}:latest"
 }
 
 run_tag_semver() {
