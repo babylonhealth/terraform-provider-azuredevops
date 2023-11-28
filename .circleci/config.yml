@@ -1,5 +1,5 @@
 ---
-version: 2
+version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@4.1
@@ -47,7 +47,7 @@ only_tagged: &only_tagged
       - /^v.*-babylon.*$/
 
 workflows:
-  version: 2
+  version: 2.1
   pr-flow:
     jobs:
     - test:
