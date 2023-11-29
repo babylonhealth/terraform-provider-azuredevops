@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-CONTAINER_NAME=babylon.jfrog.io/classic-dev-docker-virtual/babylonhealth/azure-terraform
+CONTAINER_NAME=830214760947.dkr.ecr.eu-west-2.amazonaws.com/azure-terraform
 BINARY_NAME=terraform-provider-bblnazuredevops
 
 SHA_VERSION=${CIRCLE_SHA1:-latest}
@@ -68,13 +68,10 @@ run_build() {
     cp "${BINARY_NAME}" "${PLUGIN_DIR}"
     docker build . -f babylon/Dockerfile.sha \
         -t "${CONTAINER_NAME}:${SHA_VERSION}"
-    docker tag "${CONTAINER_NAME}:${SHA_VERSION}" \
-        "${CONTAINER_NAME}:latest"
 }
 
 run_install() {
     docker push "${CONTAINER_NAME}:${SHA_VERSION}"
-    docker push "${CONTAINER_NAME}:latest"
 }
 
 run_tag_semver() {
@@ -83,12 +80,7 @@ run_tag_semver() {
         --build-arg SHA_VERSION="${SHA_VERSION}" \
         --build-arg SEMVER_VERSION="${SEMVER_VERSION}" \
         -t "${CONTAINER_NAME}:${SEMVER_VERSION}"
-
-    if docker run -e DOCKER_REPO=babylonhealth/azure-terraform -e DOCKER_TAG="${SEMVER_VERSION}" babylon.jfrog.io/classic-dev-docker-virtual/babylonhealth/tag-exists; then
-        echo "Tag ${SEMVER_VERSION} exists!" && exit 1
-    else
-        docker push "${CONTAINER_NAME}:${SEMVER_VERSION}"
-    fi
+    docker push "${CONTAINER_NAME}:${SEMVER_VERSION}"
 }
 
 main() {
